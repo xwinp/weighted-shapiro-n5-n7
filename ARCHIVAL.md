@@ -66,8 +66,8 @@ The three `EXACT` scripts use only SymPy rational algebra (no floating point in 
 
 This is a self-contained local git repository (independent of any parent repo). The proof artifacts are committed in a single snapshot whose SHA-256 manifest is §2.
 
-- **Proof-artifact commit:** `<filled by the doc-pointer commit — see git log>` (contains every file listed in §1 and hashed in `sha256_manifest.txt`).
-- **Authoritative hash on any checkout:** `git rev-parse HEAD` (the doc-pointer commit on top of the proof-artifact commit only updates this file's hash field; the proof artifacts are unchanged, so `sha256_manifest.txt` is identical).
+- **Proof-artifact commit:** `703fcb547be4c878cd086f86084551558e9d2a38` (short `703fcb5`) — contains every file listed in §1 and hashed in `sha256_manifest.txt`.
+- **Authoritative hash on any checkout:** `git rev-parse HEAD` (the doc-pointer commit on top of `703fcb5` only updates this file's hash field; the proof artifacts are unchanged, so `sha256_manifest.txt` is identical).
 - **Zenodo DOI:** `<to be minted on deposition>`
 
 ---

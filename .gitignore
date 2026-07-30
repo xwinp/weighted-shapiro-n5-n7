@@ -32,9 +32,10 @@ code/_paste.js
 code/_frozen_logs/
 
 # --- exploration output logs (superseded by code/_archival_run.txt) ---
-code/_*_out.txt
-code/_*_fb.txt
-code/_*_b64.txt
+code/*_out.txt
+code/*_fb.txt
+code/*_b64.txt
+code/*.log
 code/_verify_point_out.txt
 code/_jtau*.txt
 code/_theta*.txt
@@ -48,6 +49,9 @@ code/_task*.txt
 code/_n9_*.txt
 code/_vadic_*.txt
 code/_second_blowup_*.txt
+code/n7_minpoly_factor.txt
+code/s2_review_full.md
+code/sun_ckp.json
 
 # --- Other projects (number-theory falsification), not this paper ---
 code/a295196_*
@@ -63,3 +67,14 @@ paper/*
 .DS_Store
 Thumbs.db
 *.swp
+
+# --- repo-root browser-act / orchestrator scratch (not part of the proof) ---
+/orchestrator/
+/_paste.js
+/_click_send.js
+/send.js
+/send_gpt4.js
+/submit_gpt4.js
+/_poll_*.sh
+/_gpt_b64.txt
+/phase4_out.txt

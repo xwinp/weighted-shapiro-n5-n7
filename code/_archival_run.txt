@@ -1,0 +1,53 @@
+=== ARCHIVAL VERIFIER/CHECKER RUN ===
+Run from repo root. Python Python 3.13.9.
+
+### 1. EXACT (SymPy, no floats): verify_ny_spectral.py [Lemma 2.2 N-Y spectral bridge] ###
+(A) mu_NY == mu_paper: True
+(B) |lambda-1/2|^2 - 1/4 == mu/2: True
+    => sign(mu) = sign(|lambda-1/2|^2 - 1/4):  mu>0 <=> lambda outside closed disk
+(C) n=5: c_n=-sqrt(5)/4 - 1/4  Delta_n=-9/2 + 3*sqrt(5)/2<0  bracket_disc=-9/2 + 3*sqrt(5)/2==Delta_n: True
+    bracket lead coeff=2>0, disc<0 => bracket>0 for all p; 1-cos th>0 => mu_k>0
+(C) n=7: c_n=-cos(pi/7)  Delta_n=-7 + 4*cos(pi/7)**2 + 4*cos(pi/7)<0  bracket_disc=-7 + 4*cos(pi/7)**2 + 4*cos(pi/7)==Delta_n: True
+    bracket lead coeff=2>0, disc<0 => bracket>0 for all p; 1-cos th>0 => mu_k>0
+DONE-NY-SPECTRAL
+
+### 2. EXACT (SymPy): verify_hc_closedform.py [P=C+2sqrt(AB), Issue 6] ###
+at r1^2=A/B:  (A/r1 + B*r1)^2 == 4 A B: TRUE (numerator identically zero)
+A/r1 + B*r1 > 0 on admissible set (A,B,r1>0)  =>  A/r1 + B*r1 = +2 sqrt(AB).
+
+A = (1-u)(1+rho)                       >0  on admissible set  (1-u>0, 1+rho>0)
+B = (1+rho)uvwz/(rho^5 (1-u)(1-v)(1-w)(1-z)) >0  on admissible set (all factors >0)
+=> rho_1 = +sqrt(A/B) is the unique positive solution of g_1=0.
+
+CONCLUSION:  P = C + 2 sqrt(A B)  is an EXACT algebraic identity on the H_C
+stationary set (no numerical verification involved).
+DONE-HC-CLOSEDFORM
+
+### 3. EXACT (SymPy resultants): verify_s1_elimination.py [S1 completeness, Issue 7] ###
+
+COMPLETENESS (EXACT): every S1 KKT solution projects to (w,z) with
+  w^2 z^2 (w-1)^2 H_B H_C = 0.
+On the admissible set (w,z in (0,1)) the prefactors w^2, z^2, (w-1)^2 are nonzero
+(beta_3, beta_4 in (0,1)), so H_B H_C = 0, i.e. (w,z) in {H_B=0} U {H_C=0}.
+No third component exists.  (Saturation removes the w=0, z=0, w=1 boundaries.)
+DONE-ELIMINATION
+
+### 4. INTERVAL (mpmath.iv): n7_s1_hc_cover_checker.py [2604-piece H_C cover] ###
+  checked 2500/2604 ok=2500 fail=0
+
+Verified pieces: 2604 / 2604
+Failed: 0
+
+ALL PIECES VERIFIED (Krawczyk + admissibility + P_MV > L_C): True
+DONE-CHECKER
+
+### 5. INTERVAL (independent Arb/python-flint): n7_s1_hc_arb_checker.py [2604-piece H_C cover] ###
+Failed: 0
+ARB GLOBAL MIN P_MV = 7.050005 at piece 1757
+ARB GLOBAL MIN > 7   : True
+REASON TALLY: {}
+
+ALL PIECES Arb-VERIFIED (Krawczyk-unique + admissibility + MV P > L_C): True
+DONE-ARBCHECKER
+
+=== END (5/5 scripts: all PASS) ===

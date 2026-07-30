@@ -1,0 +1,65 @@
+# --- Python cache ---
+__pycache__/
+*.pyc
+*.pyo
+
+# --- Pickles (regenerable from the scripts) ---
+*.pickle
+
+# --- Cover duplicates / scratch data ---
+code/_hc_cover_refined.json
+code/_hc_explore_out.txt
+
+# --- browser-act / ChatGPT session scratch (driver scripts, screenshots, logs) ---
+code/_paste*.js
+code/_send*.js
+code/_inject*.js
+code/_poll*.sh
+code/_status.js
+code/_read_last.js
+code/_probe.js
+code/_click_send.js
+code/_getreply*.js
+code/_check_state.js
+code/_chk*.js
+code/_state*.js
+code/_c[0-9].js
+code/_t.js
+code/_shot_*.png
+code/_gpt_msg*.txt
+code/_gpt_msg4.b64
+code/_paste.js
+code/_frozen_logs/
+
+# --- exploration output logs (superseded by code/_archival_run.txt) ---
+code/_*_out.txt
+code/_*_fb.txt
+code/_*_b64.txt
+code/_verify_point_out.txt
+code/_jtau*.txt
+code/_theta*.txt
+code/_tau*.txt
+code/_p0_out.txt
+code/_bnb_out.txt
+code/_branch_*.txt
+code/_q97_*.txt
+code/_resgs_out.txt
+code/_task*.txt
+code/_n9_*.txt
+code/_vadic_*.txt
+code/_second_blowup_*.txt
+
+# --- Other projects (number-theory falsification), not this paper ---
+code/a295196_*
+code/agrawal_*
+code/classify_*
+code/classical_shapiro_check.py
+
+# --- paper/: keep ONLY the source of truth n57_paper.md ---
+paper/*
+!paper/n57_paper.md
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.swp

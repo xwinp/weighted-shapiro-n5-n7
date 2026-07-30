@@ -1,0 +1,19 @@
+# Dependency lock for the n=5/n=7 Tuan-Thuong weighted Shapiro proof artifacts.
+# Exact versions used to produce every certificate in this repository.
+#
+# Python: 3.13.9 (CPython, Windows/x64)
+# Platform: Windows 11
+#
+# Install:  pip install -r requirements_lock.txt
+#
+# All "EXACT" certificates (verify_ny_spectral.py, verify_hc_closedform.py,
+# verify_s1_elimination.py) use only SymPy rational algebra (no floats) and are
+# version-robust across SymPy >=1.12.  The interval certificates
+# (n7_s1_hc_cover_checker.py, n7_s1_hc_arb_checker.py) use mpmath.iv and
+# python-flint (Arb) respectively; pin these for bit-reproducibility.
+
+sympy==1.14.0
+mpmath==1.3.0
+numpy==2.4.4
+scipy==1.18.0
+python-flint==0.9.0

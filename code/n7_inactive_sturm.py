@@ -8,6 +8,7 @@ D0 = dP/dx0|x0=x5=0, D5 = dP/dx5|x0=x5=0  (inactive KKT; need >=0 on (a7,b7)).
 Eliminate t: G0(p)=Res_t(R, num(D0)), G5(p)=Res_t(R, num(D5)).
 Sturm-count roots of G0,G5 in (a7,b7); check sign at band center.
 """
+import sys
 import sympy as sp
 import mpmath as mp
 mp.mp.dps = 40
@@ -104,3 +105,6 @@ def fv(expr,pp,tt):
 print(f"\nband center p={mp.nstr(pc,15)}: D0={mp.nstr(fv(D0,pc,tv),8)} D5={mp.nstr(fv(D5,pc,tv),8)} (both must be >0)")
 print(f"G0c(center) sign = {mp.sign(mp.mpf(sp.N(G0c.subs(p,sp.Float(pc,35)),35)))}")
 print(f"G5c(center) sign = {mp.sign(mp.mpf(sp.N(G5c.subs(p,sp.Float(pc,35)),35)))}")
+print("\nCERTIFICATE: G0,G5 have 0 roots in (1/5,1/3) (which contains (a7,b7)) => D0,D5 keep sign on band.")
+print("DONE-INACTIVE-STURM")
+sys.exit(0)

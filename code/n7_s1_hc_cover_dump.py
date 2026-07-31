@@ -12,7 +12,8 @@ piece: (i) Krawczyk inclusion N(W) subset int(W) for G and E2_red (unique root);
 L_C = 141/20 = 7.05 is the certified rational global lower bound (the computed
 global minimum 7.050002 > 141/20).  Outputs code/_hc_cover.json.
 """
-import mpmath as mp, sympy as sp, pickle, json, fractions
+import mpmath as mp, sympy as sp, json, fractions
+from n7_s1_hc_critical_events import compute_critical_z
 mp.mp.ivprec=110; IV=mp.iv; mp.mp.prec=80
 exec(open('code/n7_s1_hc_rigorous_cert.py').read().split('with open')[0])
 
@@ -72,7 +73,7 @@ def cover_rec(sa,sb):
         imin=min(imin,lo); n+=1
     return imin,n
 
-with open('code/_hc_critical_z.pickle','rb') as f: crit=pickle.load(f)
+crit = compute_critical_z(verbose=False)  # recompute; no uncommitted-pickle dependency
 s_bounds=[mp.mpf(0)]+sorted([mp.mpf(1)-mp.mpf(c) for c in crit if 0<1-mp.mpf(c)<1])+[mp.mpf(1)]
 gmin=1e9; ntot=0
 print("Building machine-checkable cover (L_C=%s = %.5f)..."%(L_C,float(L_C)), flush=True)

@@ -40,35 +40,72 @@ def Bf(pv,tv): qv=1-pv; return 5*pv**2*tv + 2*pv*qv*tv**4 - 2*qv**2 - 7*qv*pv**2
 print(f"  R(p,t) = {mp.nstr(Rf(p_n,t_val),8)}  (should be ~0)")
 print(f"  B(p,t) = {mp.nstr(Bf(p_n,t_val),8)}  (should be ~0)")
 
-# ---- 2. exact resultant ----
-print("\n=== computing E(p) = Res_t(R, B) ===")
-E = sp.resultant(R, B, t)
-E = sp.expand(E)
-print(f"resultant degree in p: {sp.degree(E, p)}")
-Ef = sp.factor(E)
-print(f"factored resultant:\n{Ef}")
+# ---- 2. exact resultant, via exact quotient/remainder ----
+# E(p) = Res_t(R, B).  Claim (paper): E = p^15 * (p-1)^6 * F(p), F degree 15,
+# and the two real (0,1)-roots of F are exactly a_7, b_7.
+# Certified here by EXACT polynomial division (quotient + zero remainder), not by
+# numerical factor evaluation.
+import sys
+print("\n=== E(p) = Res_t(R, B) via exact quotient/remainder ===")
+E = sp.expand(sp.resultant(R, B, t))
+deg_E = sp.degree(E, p)
+print(f"deg_p E = {deg_E}")
 
-# collect p-only factors
-facs = [f for f in sp.Mul.make_args(Ef) if f.free_symbols <= {p} or (hasattr(f,'is_Pow') and f.base.free_symbols<={p})]
-# simpler: get factors as (poly,exp)
-pf = sp.Poly(E, p)
-print(f"\nE(p) as polynomial, degree {pf.degree()}")
-# square-free factorization
-sqf = sp.sqf_list(E, p)
-print(f"square-free factorization: {[(sp.degree(f,p),e) for f,e in sqf[1]]}")
+# exact division: E / p^15, remainder must be 0
+q1, r1 = sp.div(E, p**15, p)
+assert sp.expand(r1) == 0, "p^15 does not divide E exactly"
+print(f"E / p^15 : exact (remainder 0); deg_p quotient = {sp.degree(q1, p)}")
 
-# find which factor has roots a_7, b_7
-print("\n=== identifying factor containing a_7,b_7 ===")
-for f, e in sqf[1]:
-    fpoly = sp.Poly(f, p)
-    deg = fpoly.degree()
-    if deg == 0: continue
-    # evaluate at a_7, b_7 numerically
-    fa = complex(fpoly.eval(sp.Float(a7_val, 50)))
-    fb = complex(fpoly.eval(sp.Float(b7_val, 50)))
-    print(f"  deg {deg} factor: |f(a_7)|={abs(fa):.3e}  |f(b_7)|={abs(fb):.3e}")
-    if abs(fa) < 1e-20 and abs(fb) < 1e-20:
-        print(f"  *** FOUND: degree-{deg} factor contains a_7 and b_7 ***")
-        print(f"  factor: {f}")
-        with open("code/n7_minpoly_factor.txt","w") as fh:
-            fh.write(str(f)+"\n")
+# exact division: q1 / (p-1)^6, remainder must be 0
+q2, r2 = sp.div(q1, (p - 1)**6, p)
+assert sp.expand(r2) == 0, "(p-1)^6 does not divide E/p^15 exactly"
+F = sp.expand(q2)
+deg_F = sp.degree(F, p)
+print(f"(E/p^15) / (p-1)^6 : exact (remainder 0); deg_p F = {deg_F}")
+assert deg_F == 15, "F is not degree 15"
+print(f"\nF(p) = {F}")
+
+# F squarefree (15 distinct roots): gcd(F, F') = 1
+Fp = sp.diff(F, p)
+g = sp.gcd(F, Fp)
+sqfree = (sp.expand(g) == 1)
+print(f"\ngcd(F, F') = 1 (F squarefree, 15 distinct roots): {sqfree}")
+assert sqfree
+
+# F irreducible over Q via finite-field certificate: F mod 23 is irreducible.
+# Leading coeff 7^8 mod 23 = 12 != 0, so the degree is preserved mod 23; by Gauss
+# irreducibility over F_23 lifts to irreducibility over Q.
+lc_mod23 = sp.Mod(sp.LC(F, p), 23)
+Fp23 = sp.Poly(F, p, modulus=23)
+irred_mod23 = Fp23.is_irreducible
+print(f"leading coeff 7^8 mod 23 = {lc_mod23} (!= 0, degree preserved)")
+print(f"F mod 23 irreducible: {irred_mod23}  => F irreducible over Q (Gauss)")
+assert irred_mod23, "F mod 23 is not irreducible"
+
+# exact Sturm count of F's real roots in (0,1): must be 2 (= a_7, b_7)
+FP = sp.Poly(F, p)
+n_01 = FP.count_roots(0, 1)
+# exclude endpoints: F(0) = -65536 != 0, F(1) = ?
+F_at_0 = FP.eval(0); F_at_1 = FP.eval(1)
+n_open_01 = n_01 - (1 if F_at_0 == 0 else 0) - (1 if F_at_1 == 0 else 0)
+print(f"F(0) = {F_at_0}  F(1) = {F_at_1}  (neither 0 -> no endpoint roots)")
+print(f"Sturm count of F real roots in (0,1): {n_open_01}  (== 2 => exactly a_7, b_7)")
+assert n_open_01 == 2, "F does not have exactly 2 real roots in (0,1)"
+
+# exact algebraic isolation of the two (0,1)-roots via CRootOf; confirm they
+# match the high-precision nsolve a_7, b_7 (sanity: isolating intervals contain them)
+roots_01 = sorted(float(sp.N(r, 40)) for r in sp.real_roots(FP) if 0 < r < 1)
+match_a = abs(roots_01[0] - float(a7_val)) < 1e-20
+match_b = abs(roots_01[1] - float(b7_val)) < 1e-20
+print(f"  isolated (0,1)-roots: {roots_01[0]:.20f}  {roots_01[1]:.20f}")
+print(f"  nsolve a_7         : {float(a7_val):.20f}")
+print(f"  nsolve b_7         : {float(b7_val):.20f}")
+print(f"  match a_7: {match_a}   match b_7: {match_b}")
+assert match_a and match_b
+
+with open("code/n7_minpoly_factor.txt", "w") as fh:
+    fh.write(str(F) + "\n")
+print("\nALL EXACT CHECKS PASS: E = p^15 (p-1)^6 F (exact quotient), deg F=15, "
+      "F squarefree, F mod 23 irreducible (=> irreducible over Q), exactly 2 real (0,1)-roots = a_7,b_7.")
+print("DONE-RESULTANT")
+sys.exit(0)

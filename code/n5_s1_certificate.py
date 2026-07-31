@@ -16,6 +16,7 @@ P=5  <=>  M=0.  Certificate: Res_a(curve, num(M)) = prefactor * Q(r);
 Q all-positive coeffs => Q>0 for r>0 => no crossing => sign constant
 (checked at r=1: P-5>0) => P>5 on the whole branch.
 """
+import sys
 import sympy as sp
 from sympy import Poly, resultant, factor, expand, together, Rational
 
@@ -63,8 +64,9 @@ while coeffs and coeffs[-1] == 0:
 prim = Poly(coeffs, r, domain=sp.QQ) if coeffs else prim
 print("\nprimitive Q(r): deg", prim.degree(), " content_k=", k)
 print("Q coeffs (high->low deg):", prim.all_coeffs())
-print("ALL POSITIVE?", all(c > 0 for c in prim.all_coeffs()))
-print("ALL SAME SIGN (positive)?", all(c > 0 for c in prim.all_coeffs()))
+q_pos = all(c > 0 for c in prim.all_coeffs())
+print("ALL POSITIVE?", q_pos)
+print("ALL SAME SIGN (positive)?", q_pos)
 
 # sign check at r=1 (p=q): need a solving curve, compute P
 import mpmath as mp
@@ -87,6 +89,7 @@ b1 = (a1**2 - c1)/1
 P1 = a1/(1*b1+1*c1) + b1/(1*c1+1) + c1/1 + 1/(1*a1)
 M1 = (1.0+1.0)*P1 - 5   # M=(r+1)P-5 at r=1 (p=q=1/2): the homogeneity-degree-0 target
 print("\nr=1 (p=q=1/2): a=%s  P=%s  M=(r+1)P-5=%s  (>0? %s)" % (mp.nstr(a1,15), mp.nstr(P1,15), mp.nstr(M1,8), bool(M1>0)))
+m1_pos = bool(M1 > 0)
 
 # cross-check: numerical M=(r+1)P(r,1)-5 at several r, must be >0 (sign-constant, M(1)>0)
 # ALSO verify the stationary point is genuine: dP/da=dP/db=dP/dc ~ 0 on the ORIGINAL face.
@@ -104,4 +107,9 @@ for rv in [0.05,0.1,0.3,0.5,1.0,2.0,5.0,10.0,50.0,200.0]:
     dPc = -av*qq/(pp*bv+qq*cv)**2 - bv*pp/(pp*cv+qq)**2 + 1/pp
     print("  r=%7.2f  M=Pnorm-5=%+9.3e  KKT(|dPa|,|dPb|,|dPc|)=%.1e,%.1e,%.1e" % (
         rv, float(Mv), abs(float(dPa)), abs(float(dPb)), abs(float(dPc))))
-print("DONE")
+ok = q_pos and m1_pos
+print("\nCERTIFICATE: Q(r) all-positive=%s AND M(1)>0=%s  => P>5 on the whole S1 branch: %s" % (
+    q_pos, m1_pos, ok))
+assert ok, "n5 S1 certificate failed"
+print("DONE-N5-S1-CERT")
+sys.exit(0 if ok else 1)

@@ -12,6 +12,7 @@ Use sympy rational intervals: isolate a in a small rational interval [alo,ahi]
 with f(a)=a^6-a^2-1, f(alo)<0<f(ahi) and f monotone (f'>0 on the interval), then
 bound each term of P~_1 by interval arithmetic over [alo,ahi].
 """
+import sys
 import sympy as sp
 a=sp.symbols('a')
 f=a**6-a**2-1
@@ -43,7 +44,9 @@ print("f'(a) on bracket >0?", fp.subs(a,lo)>0 and fp.subs(a,hi)>0, "(min f' at l
 # So P~_1 = 1/a + (1/a + 1/a^3 - 1) + (a^3-1) + 1/a = 3/a + 1/a^3 + a^3 - 2
 # M(1) = 2(3/a + 1/a^3 + a^3 - 2) - 5 = 6/a + 2/a^3 + 2 a^3 - 9
 Mexpr = 6/a + 2/a**3 + 2*a**3 - 9
-print("M(1) simplified =", sp.simplify(Mexpr - (2*(sp.Rational(3,1)/a + 1/a**3 + a**3 - 2) - 5)))
+# Verify the algebraic simplification M(1) = 2*(3/a + 1/a^3 + a^3 - 2) - 5 (difference == 0)
+diff_check = sp.simplify(Mexpr - (2*(sp.Rational(3,1)/a + 1/a**3 + a**3 - 2) - 5))
+print("identity  M(1) = 2*(3/a+1/a^3+a^3-2)-5  holds (diff==0):", diff_check == 0)
 # bound each monomial on [lo,hi] with a>0
 def iv_pow(lo,hi,k):
     # a^k positive, monotone increasing for k>0 -> [lo^k, hi^k]; for negative -> [hi^k,lo^k]
@@ -51,11 +54,18 @@ def iv_pow(lo,hi,k):
     else: return hi**k, lo**k   # k negative
 alo_,ahi_=lo,hi
 # 6/a: [6/hi, 6/lo]; 2/a^3: [2/hi^3, 2/lo^3]; 2 a^3: [2 lo^3, 2 hi^3]
+# (6/a and 2/a^3 DECREASE with a; 2 a^3 INCREASES -> lower bound uses a=hi for the
+#  first two and a=lo for the third; upper bound reverses.  This is honest interval
+#  arithmetic with the per-monomial monotonicity made explicit.)
 t1_lo,t1_hi = 6/ahi_, 6/alo_
 t2_lo,t2_hi = 2/ahi_**3, 2/alo_**3
 t3_lo,t3_hi = 2*alo_**3, 2*ahi_**3
 Mlo = t1_lo + t2_lo + t3_lo - 9
 Mhi = t1_hi + t2_hi + t3_hi - 9
-print("M(1) in [",sp.nsimplify(Mlo),",",sp.nsimplify(Mhi),"]")
-print("M(1) > 1/2 ?", Mlo > sp.Rational(1,2), "  (float lo=",float(Mlo),")")
-print("DONE")
+print("M(1) rigorous interval: [%.6f, %.6f]  (exact rationals above)"%(float(Mlo), float(Mhi)))
+print("  Mlo exact =", Mlo)
+print("  Mhi exact =", Mhi)
+certified = Mlo > sp.Rational(1,2)
+print("M(1) > 1/2 ?", certified, "  (lower bound %.6f > 0.5)"%float(Mlo))
+print("DONE-M1-CERT certified=%s"%bool(certified))
+sys.exit(0 if certified else 1)

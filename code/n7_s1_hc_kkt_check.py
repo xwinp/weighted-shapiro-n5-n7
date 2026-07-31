@@ -4,6 +4,7 @@
 ALL five KKT residuals g1..g5 = rho_i dP/drho_i.  Determines whether the
 beta-variety (H_C+E2+E3+closure+g1) is the FULL stationary locus or a superset.
 """
+import sys
 import numpy as np
 from scipy.optimize import brentq
 import sympy as sp
@@ -31,6 +32,8 @@ g=[sp.together(rho[i]*sp.diff(P,rho[i])) for i in range(5)]
 gnum=[sp.expand(gi.as_numer_denom()[0]) for gi in g]
 
 print("z      p       branch    g1        g2        g3        g4        g5       Pval")
+real_Pvals = []          # Pval of every REAL (full-KKT) H_C lift
+spurious_fail_g45 = []   # for every spurious lift: does it fail via g4 or g5 (>1e-3)?
 for zv in [0.50, 0.65, 0.80, 0.85, 0.90, 0.95, 0.99]:
     HCz=sp.Poly(HC.subs(zS,zv),wS)
     wroots=[float(sp.re(r)) for r in sp.nroots(HCz,n=20) if abs(sp.im(r))<1e-9]
@@ -71,6 +74,26 @@ for zv in [0.50, 0.65, 0.80, 0.85, 0.90, 0.95, 0.99]:
             xs_=x/x.sum(); Pd=Pval(xs_,pp)
             gmax=max(abs(gg) for gg in gres)
             tag="REAL" if gmax<1e-3 else "spurious"
+            if tag == "REAL":
+                real_Pvals.append(Pd)
+            else:
+                # spurious lift must fail via the inactive-support KKT (g4 or g5),
+                # not merely a near-miss on g1..g3
+                spurious_fail_g45.append(max(abs(gres[3]), abs(gres[4])) > 1e-3)
             print("%.2f  %.5f %s  %.1e %.1e %.1e %.1e %.1e  %.5f"%(
                 zv,pp,tag,gres[0],gres[1],gres[2],gres[3],gres[4],Pd))
+n_real = len(real_Pvals)
+n_spur = len(spurious_fail_g45)
+all_real_above_7 = all(P > 7 for P in real_Pvals)
+all_spur_fail = all(spurious_fail_g45) if spurious_fail_g45 else True
+ok = (n_real + n_spur > 0) and all_real_above_7 and all_spur_fail
+print("\nKKT classification: %d REAL lifts (all Pval>7: %s, min Pval=%.5f); "
+      "%d spurious (all fail g4/g5: %s)" % (
+          n_real, all_real_above_7, min(real_Pvals) if real_Pvals else float('nan'),
+          n_spur, all_spur_fail))
+print("CERTIFICATE: every REAL H_C-lift stationary point has P>7=%s AND every spurious lift "
+      "fails g4/g5=%s  => H_C is a superset of the stationary locus, no sub-bound stationary "
+      "point missed: %s" % (all_real_above_7, all_spur_fail, ok))
+assert ok, "n7 H_C KKT superset check failed"
 print("DONE-KKT")
+sys.exit(0 if ok else 1)

@@ -22,6 +22,7 @@ Method (all rigorous, mpmath.iv with NATIVE iv.sqrt which is outward-directed):
   2. Bound  P = 2 rho (1+rho)/z * [3-2z-z^2+w z(1+z)]  over the certified z-box.
   3. Report the rigorous P interval and its sign vs 7.
 """
+import sys
 import mpmath as mp
 import sympy as sp
 
@@ -147,4 +148,6 @@ print("ALL THREE SAMPLES RIGOROUS (native iv.sqrt, Krawczyk-unique z):", all_ok)
 print("  => (0,rho1)>7  (p1,1): P>7")
 print("  => (rho1,rho2)<7  (p2,p1): P<7")
 print("  => (rho2,inf)>7  (0,p2): P>7")
-print("DONE")
+assert all_ok, "three-sample sign-portrait certificate failed"
+print("DONE-THREE-SAMPLES")
+sys.exit(0 if all_ok else 1)

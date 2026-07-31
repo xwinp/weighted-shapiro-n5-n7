@@ -16,6 +16,7 @@ This script VERIFIES every link:
   (C) w_L(z7) < 0 rigorously (mpmath.iv), w_+(z7) > 0;
   (D) L(w_+(1/2), 1/2) < 0 rigorously.
 """
+import sys
 import sympy as sp
 import mpmath as mp
 
@@ -37,7 +38,8 @@ Hw = 2*z*w + 1 - z**2
 rhs = -2*Lgpt/(w*z*D*Hw)
 # Compare dlogK (with w=wp) to rhs (with w=wp). Both contain sqrt(disc) via wp,D.
 diff = sp.simplify(sp.together(dlogK - rhs.subs(w, wp)))
-print("(A) K'/K - (GPT rhs) simplified =", diff, "  => identity holds:", diff == 0)
+A_ok = (diff == 0)
+print("(A) K'/K - (GPT rhs) simplified =", diff, "  => identity holds:", A_ok)
 
 # ---- (B) Res_w(H_B, L) == z(z-1) Q_7 ----
 # Use H_B as polynomial in w (deg 2), L linear in w. Resultant wrt w.
@@ -48,6 +50,7 @@ target = sp.expand(z*(z-1)*Q7)
 print("(B) Res_w(H_B,L) =", Res)
 print("    z(z-1)Q_7    =", target)
 print("    coeff match  :", sp.expand(Res - target) == 0)
+B_ok = (sp.expand(Res - target) == 0)
 # also confirm Q_7 is THE det-certificate Q_7 (same coeffs as rigorous_certs)
 Q7_check = 8*z**7-24*z**6+20*z**5-9*z**4+30*z**3-15*z**2-6
 print("    Q_7 == det-cert Q_7 :", sp.expand(Q7-Q7_check)==0)
@@ -74,6 +77,7 @@ b_iv = -2*ziv**5+3*ziv**4-ziv**3+5*ziv**2-5*ziv
 print("    a(z7) in [%s,%s]"%(mp.nstr(a_iv.a,6),mp.nstr(a_iv.b,6)))
 print("    b(z7) in [%s,%s]"%(mp.nstr(b_iv.a,6),mp.nstr(b_iv.b,6)))
 # w_L = -b/a . a,b sign-definite => use direct rigorous interval division.
+wL = None
 if (a_iv.a>0 or a_iv.b<0) and not (a_iv.a<=0<=a_iv.b):
     wL = (-b_iv)/a_iv     # rigorous interval division (a excludes 0)
     print("    w_L(z7) = -b/a in [%s, %s]  -> %s"%(
@@ -88,7 +92,8 @@ disc_iv = ziv**4-4*ziv**3+2*ziv**2+1
 sq = iv_sqrt(disc_iv)
 wp_iv = (-(1-ziv**2)+sq)/(2*ziv)
 print("    w_+(z7) in [%s, %s]  (>0? %s)"%(mp.nstr(wp_iv.a,8),mp.nstr(wp_iv.b,8), wp_iv.a>0))
-print("    w_L(z7) != w_+(z7):", wL.b<0 and wp_iv.a>0)
+C_ok = (wL is not None) and (wL.b < 0) and (wp_iv.a > 0)
+print("    w_L(z7) != w_+(z7):", C_ok)
 
 # ---- (D) L(w_+(1/2), 1/2) < 0 rigorously ----
 print("\n(D) sample z=1/2")
@@ -101,6 +106,12 @@ discS = zS**4-4*zS**3+2*zS**2+1   # = 17/16
 wpS = (-(1-zS**2)+sp2.sqrt(discS))/(2*zS)   # = (-3+sqrt17)/4
 LS = (2*zS**5-3*zS**4-zS**3-2*zS**2+2)*wpS + (-2*zS**5+3*zS**4-zS**3+5*zS**2-5*zS)
 LS = sp2.simplify(LS)
+D_ok = bool(sp2.N(LS, 20) < 0)
 print("    L(w_+(1/2),1/2) exact =", LS, "  numerical =", sp2.N(LS,20))
-print("    <0 ?", sp2.N(LS,20) < 0)
-print("DONE")
+print("    <0 ?", D_ok)
+ok = A_ok and B_ok and C_ok and D_ok
+print("\nCERTIFICATE: K'/K identity=%s; Res_w(H_B,L)=z(z-1)Q_7=%s; w_L(z7)<0<w_+(z7)=%s; "
+      "L(w_+(1/2),1/2)<0=%s  => rho(z) strictly increasing: %s" % (A_ok, B_ok, C_ok, D_ok, ok))
+assert ok, "rho-monotonicity L-certificate failed"
+print("DONE-RHO-MONO-LCERT")
+sys.exit(0 if ok else 1)

@@ -23,6 +23,7 @@ This script:
  (C) p0 from Q5, checks p0 in (3/8,2/5); Q7 root -> negative w.
  (D) P_{S1}^stat(2/5) > 7 rational interval cert.
 """
+import sys
 import numpy as np
 from scipy.optimize import root
 import sympy as sp
@@ -107,7 +108,8 @@ print("Res computed. deg_rho =", sp.Poly(Res, rho).degree())
 # Factor out spurious factors: 896 rho^13 (rho+1)^7 (8rho^2+8rho+7)^6
 spurious = 896 * rho**13 * (rho+1)**7 * (8*rho**2+8*rho+7)**6
 quot, rem = sp.div(sp.Poly(Res,rho), sp.Poly(sp.expand(spurious),rho), rho)
-print("remainder after dividing out spurious factors:", sp.expand(rem.as_expr())==0)
+rem_zero = (sp.expand(rem.as_expr()) == 0)
+print("remainder after dividing out spurious factors:", rem_zero)
 Phi = quot.as_expr()
 Phi = sp.expand(Phi)
 Pp = sp.Poly(Phi, rho)
@@ -136,9 +138,11 @@ from sympy import S
 def sturm_count(a,b):
     return sp.count_roots(Phi, a, b)
 print("  (0,2)   =", sturm_count(sp.Rational(0), sp.Rational(2)))
-print("  (2,5/2) =", sturm_count(sp.Rational(2), sp.Rational(5,2)))
+n_2_52 = sturm_count(sp.Rational(2), sp.Rational(5,2))
+n_3_72 = sturm_count(sp.Rational(3), sp.Rational(7,2))
+print("  (2,5/2) =", n_2_52)
 print("  (5/2,3) =", sturm_count(sp.Rational(5,2), sp.Rational(3)))
-print("  (3,7/2) =", sturm_count(sp.Rational(3), sp.Rational(7,2)))
+print("  (3,7/2) =", n_3_72)
 print("  (7/2,inf)=", len([r for r in sp.real_roots(PhiPoly) if sp.N(r)>sp.Rational(7,2)]))
 rrts=[sp.N(r,15) for r in sp.real_roots(PhiPoly)]
 print("  positive roots:", rrts)
@@ -243,5 +247,15 @@ if rts:
         wv=(-(1-zv**2)+dv**0.5)/(2*zv)
         return 2*float(rhov)*(1+float(rhov))/zv*(3-2*zv-zv**2+wv*zv*(1+zv))
     print("  P(zlo)=%.8f  P(zhi)=%.8f  (both should be >7)"%(Pstat_at(float(zlo)),Pstat_at(float(zhi))))
-    print("  P_{S1}^stat(2/5) > 7 :", min(Pstat_at(float(zlo)),Pstat_at(float(zhi)))>7)
-print("DONE")
+    p27 = min(Pstat_at(float(zlo)), Pstat_at(float(zhi))) > 7
+    print("  P_{S1}^stat(2/5) > 7 :", p27)
+else:
+    p27 = False
+# aggregate certificate
+ok = rem_zero and match and (n_2_52 == 1) and (n_3_72 == 1) and p27
+print("\nCERTIFICATE: Res_z = spurious*Phi_35 (rem=0)=%s; coeffs match=%s; "
+      "Phi_35 roots in (2,5/2)=%d and (3,7/2)=%d; P(2/5)>7=%s : %s" % (
+          rem_zero, match, n_2_52, n_3_72, p27, ok))
+assert ok, "n7 S1 crossing-resultant certificate failed"
+print("DONE-CROSSING-RESULTANT")
+sys.exit(0 if ok else 1)

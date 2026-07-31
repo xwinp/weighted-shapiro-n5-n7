@@ -10,6 +10,7 @@ For each rational p: isolate the unique positive root t of R(p,t)=q^3-p^3 t^5-p^
 then evaluate B=5 p^2 t+2 p q t^4-2 q^2-7 q p^2  (sign of P_curve-7 = sign of B,
 since P_curve-7 = B/(q p^2) + R*(...)) and D0,D5 via rational interval arithmetic.
 """
+import sys
 import sympy as sp
 t,p=sp.symbols('t p'); q=1-p
 # KKT recovery on S2: x=(0,1,b,c,d,0,e=t), d=t^2
@@ -72,6 +73,7 @@ def iv_eval(expr,pval,lo,hi):
     if dlo<=0 or dhi<=0: return None  # denominator not sign-definite positive
     return nlo/dhi, nhi/dlo   # den>0: [num_lo/den_hi, num_hi/den_lo]
 
+B_signs={}
 for pval,region in [(sp.Rational(1,5),"p=1/5<a7 (expect P>7, B>0)"),
                     (sp.Rational(1,4),"p=1/4 in (a7,b7) (expect P<7, B<0)"),
                     (sp.Rational(1,3),"p=1/3>b7 (expect P>7, B>0)")]:
@@ -80,16 +82,28 @@ for pval,region in [(sp.Rational(1,5),"p=1/5<a7 (expect P>7, B>0)"),
     lo,hi,tv=res
     Biv=iv_eval(B,pval,lo,hi)
     sgn = "+" if (Biv and Biv[0]>0) else ("-" if (Biv and Biv[1]<0) else "?")
+    B_signs[pval]=sgn
     print("%-42s t~%.5f in[%.5f,%.5f]  B in[%s,%s] -> sign %s"%(region,tv,float(lo),float(hi),
           sp.nsimplify(Biv[0]),sp.nsimplify(Biv[1]),sgn) if Biv else region+" eval fail")
 
 # D0,D5 at p=1/4
 pval=sp.Rational(1,4)
 lo,hi,tv=isol_t(pval)
+d_pos={}
 for name,Dexpr in [("D0",D0),("D5",D5)]:
     iv=iv_eval(Dexpr,pval,lo,hi)
     if iv:
+        d_pos[name]=bool(iv[0]>0)
         print("p=1/4 %s in [%s, %s]  >0? %s  (float [%.5f,%.5f])"%(name,sp.nsimplify(iv[0]),sp.nsimplify(iv[1]),iv[0]>0,float(iv[0]),float(iv[1])))
     else:
+        d_pos[name]=False
         print(name,"eval fail")
-print("DONE")
+three_sign = (B_signs.get(sp.Rational(1,5))=="+" and B_signs.get(sp.Rational(1,4))=="-"
+              and B_signs.get(sp.Rational(1,3))=="+")
+d0d5_pos = d_pos.get("D0") and d_pos.get("D5")
+ok = three_sign and d0d5_pos
+print("\nCERTIFICATE: three-sign portrait (+,-,+ at p=1/5,1/4,1/3)=%s AND D0,D5>0 at p=1/4=%s : %s" % (
+    three_sign, d0d5_pos, ok))
+assert ok, "n7 S2 rational-signs certificate failed"
+print("DONE-S2-SIGNS")
+sys.exit(0 if ok else 1)

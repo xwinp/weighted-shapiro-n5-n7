@@ -24,7 +24,8 @@ Method (mean-value form, robust to interval dependency):
   P(box) subset P(mid) + sum_i (dP/dx_i)(box)*(x_i-mid).  Bisect s further
   whenever the P lower bound is <= 7 (loose).
 """
-import mpmath as mp, numpy as np, sympy as sp, pickle
+import mpmath as mp, numpy as np, sympy as sp
+from n7_s1_hc_critical_events import compute_critical_z
 mp.mp.ivprec=110; IV=mp.iv
 mp.mp.prec=80
 
@@ -271,7 +272,7 @@ def cover(sa,sb):
         imin=min(imin,lo); n+=1
     return imin,n
 
-with open('code/_hc_critical_z.pickle','rb') as f: crit=pickle.load(f)
+crit = compute_critical_z(verbose=False)  # recompute; no uncommitted-pickle dependency
 # map z-critical to s=1-z; arc lives in s in (0, 1-0.801938)
 s_bounds=[mp.mpf(0)]+sorted([mp.mpf(1)-mp.mpf(c) for c in crit if 0<1-mp.mpf(c)<1])+[mp.mpf(1)]
 gmin=1e9; ntot=0

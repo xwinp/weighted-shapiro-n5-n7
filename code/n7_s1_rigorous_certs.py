@@ -10,6 +10,7 @@
  (c) p0 in (3/8, 2/5): p0 from Q5 root z0; certified by Q5(3/8-corresponding) signs.
      Simpler: p0 = 1/(1+rho0), rho0^7 = w0 z0^5/((1-z0)D0^3); bound via intervals.
 """
+import sys
 import mpmath as mp
 import sympy as sp
 mp.mp.ivprec = 80
@@ -45,7 +46,8 @@ D = 1 - z**2 + w*z**2
 print("  D interval:", mp.nstr(D.a,8), "to", mp.nstr(D.b,8), ">0?", D.a>0)
 P = 2*rho*(1+rho)/z * (3 - 2*z - z**2 + w*z*(1+z))
 print("  P interval:", mp.nstr(P.a,10), "to", mp.nstr(P.b,10))
-print("  P > 7 ?", P.a > 7)
+a_ok = bool(P.a > 7)
+print("  P > 7 ?", a_ok)
 # also check H_B and closure hold (sanity): H_B = z w^2+(1-z^2)w+z^2-z ~0, closure=rho^7(1-z)D^3-w z^5 ~0
 HB = z*w**2 + (1-z**2)*w + z**2 - z
 cl = rho**7*(1-z)*D**3 - w*z**5
@@ -74,6 +76,7 @@ def det_at(zint):
     num=num_red(zint,wint)
     # det = num / D^5 ; D>0 so sign(det)=sign(num)
     return num, Dint
+det_signs_ok = True
 for (label, zlo, zhi, expect) in [
     ("z=19/20 (>z0=0.8976, expect det<0)", mp.mpf(19)/20, mp.mpf(19)/20, "<0"),
     ("z=17/20 (<z0, expect det>0)", mp.mpf(17)/20, mp.mpf(17)/20, ">0"),
@@ -82,9 +85,13 @@ for (label, zlo, zhi, expect) in [
 ]:
     zint=mp.iv.mpf([zlo,zhi])
     num,Dint=det_at(zint)
-    print("  %s: det numerator in [%s, %s]  D>0?%s  -> sign %s"%(
-        label, mp.nstr(num.a,5), mp.nstr(num.b,5), Dint.a>0,
-        "<0" if num.b<0 else (">0" if num.a>0 else "AMBIGUOUS")))
+    sgn = "<0" if num.b<0 else (">0" if num.a>0 else "AMBIGUOUS")
+    ok_i = (sgn == expect)
+    det_signs_ok = det_signs_ok and ok_i
+    print("  %s: det numerator in [%s, %s]  D>0?%s  -> sign %s  %s"%(
+        label, mp.nstr(num.a,5), mp.nstr(num.b,5), bool(Dint.a>0), sgn,
+        "OK" if ok_i else "FAIL"))
+print("  four det signs all match expected:", det_signs_ok)
 # Q7 root z7~0.87618: det-zero w_det = -Qv(z7)/Pv(z7) is LINEAR in w, so unique.
 # Show w_det(z7) < 0  (non-admissible negative w-root), hence not on positive branch.
 import sympy as sp
@@ -104,6 +111,7 @@ Pv7=Pv_eval(zint7); Qv7=Qv_eval(zint7)
 print("  at z7: Pv in [%s,%s]"%(mp.nstr(Pv7.a,6),mp.nstr(Pv7.b,6)))
 print("  at z7: Qv in [%s,%s]"%(mp.nstr(Qv7.a,6),mp.nstr(Qv7.b,6)))
 # w_det = -Qv/Pv.  Need sign. Pv sign?
+wdet7_neg = False
 if Pv7.a>0 or Pv7.b<0:
     Pv_sgn = "pos" if Pv7.a>0 else "neg"
     # division: if Pv>0, w_det in [-Qv_b/Pv_a, -Qv_a/Pv_b]; if Pv<0, swap
@@ -111,11 +119,13 @@ if Pv7.a>0 or Pv7.b<0:
         wdet = mp.iv.mpf([-Qv7.b/Pv7.a, -Qv7.a/Pv7.b])
     else:
         wdet = mp.iv.mpf([-Qv7.b/Pv7.b, -Qv7.a/Pv7.a])  # Pv<0: bounds flip
+    wdet7_neg = bool(wdet.b < 0)
     print("  w_det(z7) = -Qv/Pv in [%s, %s]  -> %s"%(
         mp.nstr(wdet.a,8), mp.nstr(wdet.b,8),
         "<0 (negative, NON-admissible)" if wdet.b<0 else (">0 (admissible!)" if wdet.a>0 else "AMBIGUOUS")))
 else:
     print("  Pv sign ambiguous at z7; widen isolation.")
+print("  w_det(z7) < 0 (non-admissible negative w-root):", wdet7_neg)
 # compare: positive H_B root w_+(z7)
 wplus7=w_plus(zint7)
 print("  positive H_B root w_+(z7) in [%s, %s] (>0)"%(mp.nstr(wplus7.a,8),mp.nstr(wplus7.b,8)))
@@ -157,8 +167,16 @@ rhs = wint * zint**5 / ((1-zint)*Dint**3)
 rho0 = iv_pow7_inv(rhs)
 p0 = 1/(1+rho0)
 print("  p0 interval: [%s, %s]"%(mp.nstr(p0.a,12), mp.nstr(p0.b,12)))
+c_in = bool((p0.a > mp.mpf(3)/8) and (p0.b < mp.mpf(2)/5))
+c_gt13 = bool(p0.a > mp.mpf(1)/3)
 print("  p0 in (3/8, 2/5)?  3/8=%s  2/5=%s  -> %s"%(
-    mp.nstr(mp.mpf(3)/8,6), mp.nstr(mp.mpf(2)/5,6),
-    (p0.a > mp.mpf(3)/8) and (p0.b < mp.mpf(2)/5)))
-print("  p0 > 1/3?", p0.a > mp.mpf(1)/3)
-print("DONE")
+    mp.nstr(mp.mpf(3)/8,6), mp.nstr(mp.mpf(2)/5,6), c_in))
+print("  p0 > 1/3?", c_gt13)
+c_ok = c_in and c_gt13
+b_ok = det_signs_ok and wdet7_neg
+ok = a_ok and b_ok and c_ok
+print("\nCERTIFICATE: (a) P_{S1}^stat(2/5)>7=%s; (b) four det signs match + w_det(z7)<0=%s; "
+      "(c) p0 in (3/8,2/5) & >1/3=%s  => %s" % (a_ok, b_ok, c_ok, ok))
+assert ok, "n7 S1 rigorous interval certificate failed"
+print("DONE-RIGOROUS-CERTS")
+sys.exit(0 if ok else 1)

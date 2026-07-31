@@ -20,7 +20,8 @@ cell no lift crosses a boundary, so the admissible-lift count is CONSTANT and th
 midpoint enumeration is exhaustive for the whole cell.  Event fibers (5 critical s)
 and endpoints (s=0, s=1) are certified separately.
 """
-import mpmath as mp, sympy as sp, pickle, json
+import mpmath as mp, sympy as sp, json
+from n7_s1_hc_critical_events import compute_critical_z
 mp.mp.ivprec=110; IV=mp.iv; mp.mp.prec=80
 exec(open('code/n7_s1_hc_rigorous_cert.py').read().split('with open')[0])
 
@@ -74,7 +75,7 @@ def recover_c(vv, s0):
     return best, bestd
 
 # ---- cells ----
-with open('code/_hc_critical_z.pickle','rb') as f: crit=pickle.load(f)
+crit = compute_critical_z(verbose=False)  # recompute; no uncommitted-pickle dependency
 s_crit = sorted(set(mp.mpf(1)-mp.mpf(c) for c in crit if 0<1-c<1))
 s_bounds = [mp.mpf(0)] + s_crit + [mp.mpf(1)]
 

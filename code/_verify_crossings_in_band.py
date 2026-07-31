@@ -10,6 +10,7 @@ We isolate each root in a tight rational interval by exact Sturm sign changes,
 then check the four inequalities  a7 < p2 < b7  and  a7 < p1 < b7  rigorously
 (interval endpoints are rational, comparisons exact).
 """
+import sys
 import sympy as sp
 
 p = sp.symbols('p')
@@ -88,5 +89,11 @@ print("  => {p1,p2} subset (a7,b7) :", c1 and c2 and c3 and c4)
 
 # also confirm both crossings have p < 1/3 < p0  (p0 in (3/8,2/5))
 print("\n  p1 < 1/3 :", p1_hi < sp.Rational(1,3), "  p2 < 1/3 :", p2_hi < sp.Rational(1,3))
-print("  => both crossings < 1/3 < 3/8 < p0  :", p1_hi < sp.Rational(1,3) and p2_hi < sp.Rational(1,3))
-print("DONE")
+both_below = p1_hi < sp.Rational(1,3) and p2_hi < sp.Rational(1,3)
+print("  => both crossings < 1/3 < 3/8 < p0  :", both_below)
+ok = (c1 and c2 and c3 and c4) and both_below
+print("\nCERTIFICATE: {p1,p2} subset (a7,b7)=%s AND both < 1/3 < p0=%s : %s" % (
+    c1 and c2 and c3 and c4, both_below, ok))
+assert ok, "crossings-in-band certificate failed"
+print("DONE-CROSSINGS-IN-BAND")
+sys.exit(0 if ok else 1)

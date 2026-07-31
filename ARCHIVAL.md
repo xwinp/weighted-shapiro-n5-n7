@@ -49,6 +49,8 @@ sha256sum -c sha256_manifest.txt
 
 The ZIP includes `.git`; `git rev-parse HEAD` identifies the snapshot. The SHA-256 manifest remains authoritative even if `.git` is stripped.
 
+**Archived commit (rev 5, prior snapshot):** `41227cc2d9a970dc3f742a33b383742128f0c2e6`. **Rev 6 (current `HEAD`)** supersedes rev 5: the seven load-bearing certificate scripts are identical to rev 4/5 (unchanged); three diagnostic scripts (`n5_s1_certificate.py`, `n7_inactive_sturm.py`, `n7_roots.py`) are repaired to be exact-symbolic (no `mpmath.polyroots`, no float-truncated Sturm — `Poly.count_roots` over `QQ` with rational endpoints, `Poly.intervals` isolation, `factor_list(..., modulus=23)` finite-field cert); `md2tex.py` strips the markdown blockquote marker so no literal `>` appears in the typeset paper; and the rev-5 editorial corrections (intro root ordering, Lemma 2.3 `inf∅=+∞`, S₃ identity `r⁵` term) are retained. The current snapshot is identified by `git rev-parse HEAD`; the SHA-256 manifest is authoritative even if `.git` is stripped.
+
 ## Build the paper
 
 ```bash

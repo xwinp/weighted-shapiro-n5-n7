@@ -57,9 +57,9 @@ content = Pr.content()
 prim = Poly(sp.quo(Res, content, r), r, domain=sp.QQ)
 # factor out the largest r^k
 k = 0
-coeffs = prim.all_coeffs()
-while coeffs and coeffs[0] == 0:
-    coeffs = coeffs[1:]; k += 1
+coeffs = prim.all_coeffs()  # high->low; r^k prefactor shows as k low-degree zeros
+while coeffs and coeffs[-1] == 0:
+    coeffs = coeffs[:-1]; k += 1
 prim = Poly(coeffs, r, domain=sp.QQ) if coeffs else prim
 print("\nprimitive Q(r): deg", prim.degree(), " content_k=", k)
 print("Q coeffs (high->low deg):", prim.all_coeffs())
@@ -72,16 +72,21 @@ mp.mp.dps = 40
 def curve_pos_a(rv):
     # a^6 - r^3 a^2 - r^2 = 0, let u=a^2: u^3 - r^3 u - r^2 = 0, unique positive u
     f = lambda u: u**3 - rv**3*u - rv**2
-    # bracket: f(0)=-r^2<0, f large>0
-    hi = max(1.0, rv**1.5 + rv + 1.0)
-    u = mp.findroot(f, (0.0, hi)) if False else mp.findroot(f, rv*1.2)
-    # robust: use mpmath findroot with secant near guess
-    return mp.sqrt(u)
+    # bisection on (0, hi): f(0)=-r^2<0, f(hi)>0 -> unique real positive root (no complex)
+    lo, hi = mp.mpf(0), mp.mpf(max(1.0, rv**1.5 + rv + 1.0))
+    while f(hi) <= 0:
+        hi *= 2
+    for _ in range(150):
+        mid = (lo + hi) / 2
+        if f(mid) < 0: lo = mid
+        else: hi = mid
+    return mp.sqrt((lo + hi) / 2)
 a1 = curve_pos_a(1.0)
 c1 = (a1**3 - 1)/1**2
 b1 = (a1**2 - c1)/1
 P1 = a1/(1*b1+1*c1) + b1/(1*c1+1) + c1/1 + 1/(1*a1)
-print("\nr=1 (p=q=1/2): a=%s  P=%s  P-5=%s  (>0? %s)" % (mp.nstr(a1,15), mp.nstr(P1,15), mp.nstr(P1-5,8), bool(P1-5>0)))
+M1 = (1.0+1.0)*P1 - 5   # M=(r+1)P-5 at r=1 (p=q=1/2): the homogeneity-degree-0 target
+print("\nr=1 (p=q=1/2): a=%s  P=%s  M=(r+1)P-5=%s  (>0? %s)" % (mp.nstr(a1,15), mp.nstr(P1,15), mp.nstr(M1,8), bool(M1>0)))
 
 # cross-check: numerical M=(r+1)P(r,1)-5 at several r, must be >0 (sign-constant, M(1)>0)
 # ALSO verify the stationary point is genuine: dP/da=dP/db=dP/dc ~ 0 on the ORIGINAL face.

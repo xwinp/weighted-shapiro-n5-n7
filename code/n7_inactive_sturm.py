@@ -39,15 +39,22 @@ print("Computing G5 = Res_t(R, D5n) ...")
 G5 = sp.factor(sp.resultant(R, D5n, t))
 print("G5 =", G5)
 
-# band endpoints (roots of F in (0,1))
+# band endpoints: exact rational Sturm isolation of F's two (0,1)-roots (no polyroots)
 F = (5764801*p**15 - 47765494*p**14 + 190003135*p**13 - 486209703*p**12
      + 901678743*p**11 - 1287828143*p**10 + 1464952167*p**9 - 1351039522*p**8
      + 1017028633*p**7 - 624621984*p**6 + 310300032*p**5 - 122238368*p**4
      + 36836352*p**3 - 7952896*p**2 + 1073408*p - 65536)
-Froots = [mp.mpf(r) for r in mp.polyroots([int(c) for c in sp.Poly(F,p).all_coeffs()], extraprec=60) if abs(mp.im(r))<1e-30]
-Froots_real = sorted([mp.re(r) for r in Froots if 0 < mp.re(r) < 1])
-a7, b7 = Froots_real[0], Froots_real[1]
-print(f"\na7={mp.nstr(a7,25)}\nb7={mp.nstr(b7,25)}")
+Fp = sp.Poly(F, p, domain=sp.QQ)
+n_F_01 = Fp.count_roots(sp.Integer(0), sp.Integer(1))
+print(f"\nF: exact count_roots(0,1) = {n_F_01} (expect 2); irreducible over Q? {Fp.is_irreducible}")
+ivs = sorted([item[0] for item in Fp.intervals(inf=sp.Integer(0), sup=sp.Integer(1))], key=lambda x: x[0])
+# high-precision value of each isolated (0,1)-root via CRootOf.evalf (exact root, not polyroots)
+_real = [(r, r.evalf(45)) for r in Fp.all_roots() if r.is_real]
+roots01 = sorted([(r, v) for (r, v) in _real if 0 < v < 1], key=lambda x: x[1])
+a7 = mp.mpf(roots01[0][1])
+b7 = mp.mpf(roots01[1][1])
+print(f"a7 = {mp.nstr(a7,25)}  in ({ivs[0][0]}, {ivs[0][1]})")
+print(f"b7 = {mp.nstr(b7,25)}  in ({ivs[1][0]}, {ivs[1][1]})")
 
 # strip the (irrelevant) p^k(p-1)^l powers from G0,G5 and Sturm on the remaining factor
 def strip_ppow(g):
@@ -73,32 +80,16 @@ print("\nG0 (stripped) =", G0c)
 print("G5 (stripped) =", G5c)
 print("deg G0c =", sp.degree(G0c,p), "deg G5c =", sp.degree(G5c,p))
 
-def sturm_count(poly_expr, lo, hi):
-    Pp = sp.Poly(poly_expr, p)
-    seq = sp.sturm(Pp)
-    # convert each sturm term to a mpmath-evaluable coeff list in p
-    def coeffs_of(expr):
-        Poly = sp.Poly(expr, p)
-        d = Poly.degree()
-        cl = [mp.mpf(0)]*(d+1)
-        for pw, co in Poly.as_dict().items():
-            cl[pw[0]] = mp.mpf(int(co))
-        return cl
-    seq_c = [coeffs_of(tt) for tt in seq]
-    def evalc(cl, val):
-        v = mp.mpf(0); xv = mp.mpf(1)
-        for c in cl:
-            v += c*xv; xv *= val
-        return v
-    def sign_chg_at(val):
-        s = [mp.sign(evalc(cl, val)) for cl in seq_c]
-        return sum(1 for i in range(len(s)-1) if s[i]*s[i+1] < 0)
-    return sign_chg_at(lo) - sign_chg_at(hi)
+def sturm_count_exact(poly_expr, lo, hi):
+    """Exact rational Sturm root count in (lo, hi) via Poly.count_roots (no float truncation)."""
+    return sp.Poly(poly_expr, p, domain=sp.QQ).count_roots(sp.Rational(lo), sp.Rational(hi))
 
-n0 = sturm_count(G0c, a7, b7)
-n5 = sturm_count(G5c, a7, b7)
-print(f"\nSturm roots of G0 in (a7,b7): {n0}")
-print(f"Sturm roots of G5 in (a7,b7): {n5}")
+# (a7,b7) subset (1/5,1/3); 0 roots in the larger rational interval => 0 in the band
+n0 = sturm_count_exact(G0c, sp.Rational(1,5), sp.Rational(1,3))
+n5 = sturm_count_exact(G5c, sp.Rational(1,5), sp.Rational(1,3))
+print(f"\nSturm roots of G0 in (1/5,1/3): {n0}  (==0: {n0==0})")
+print(f"Sturm roots of G5 in (1/5,1/3): {n5}  (==0: {n5==0})")
+assert n0 == 0 and n5 == 0, "inactive-KKT Sturm count must be 0"
 
 # sign at band center
 pc = (a7+b7)/2

@@ -107,6 +107,7 @@ out.append(r"\bigskip")
 i = body_start
 while i < len(lines):
     raw = lines[i].rstrip("\n")
+    raw = re.sub(r"^>\s?", "", raw)   # strip markdown blockquote marker (> Lemma/Proof)
     s = raw.strip()
     # display math block: single-line $$...$$ or multi-line $$ ... $$
     if s.startswith("$$"):

@@ -90,6 +90,9 @@ Thumbs.db
 /_gpt_rev4_extract/
 /_gpt_rev4_*.txt
 
+# --- GPT editorial-fix bundle staging (downloaded from ChatGPT; not part of the proof) ---
+/_gpt_editorial_extract/
+
 # --- scratch / exploration scripts used during the audit (not load-bearing) ---
 code/_scratch_*.py
 code/_gpt_verdict*.txt

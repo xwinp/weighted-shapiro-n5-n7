@@ -222,8 +222,8 @@ preamble = r"""\documentclass[11pt,a4paper]{article}
 \usepackage[margin=2.4cm]{geometry}
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{xeCJK}
-\setCJKmainfont{SimSun}
-\setCJKsansfont{Microsoft YaHei}
+\IfFontExistsTF{Noto Serif CJK SC}{\setCJKmainfont{Noto Serif CJK SC}}{\setCJKmainfont{SimSun}}
+\IfFontExistsTF{Noto Sans CJK SC}{\setCJKsansfont{Noto Sans CJK SC}}{\setCJKsansfont{Microsoft YaHei}}
 \usepackage{booktabs,array}
 \usepackage{graphicx}
 \usepackage{xcolor}

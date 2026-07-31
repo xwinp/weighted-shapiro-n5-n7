@@ -5,8 +5,7 @@ each is exact-rational or rigorous-interval and must pass) and **exploration /
 numerical** scripts (used to discover the structure; *not* load-bearing — a
 timeout or display quirk in one of these does not affect any theorem).
 
-The paper cites only **formal certificate** scripts. Frozen re-run logs and
-SHA-256 hashes live in `code/_frozen_logs/`.
+The paper cites only **formal certificate** scripts. The captured verification log is `code/_archival_run.txt`; repository-wide hashes are in `sha256_manifest.txt`.
 
 ## Formal certificates (load-bearing)
 
@@ -25,7 +24,9 @@ SHA-256 hashes live in `code/_frozen_logs/`.
 | n=7, S₁ monotonicity | `n7_s1_rho_monotone_Lcert.py` | Res_w(H_B,L)=z(z−1)Q₇; ρ(z) strictly increasing |
 | n=7, S₃ | `verify_s3_closed.py` | P_S₃^stat=(1+r⁵)(5−r⁷)/r²; min 8.009975>7 |
 | n=7, S₀ uniform | `verify_uniform_hess.py` | 6×6 Hred eigenvalues = closed-form spectrum |
-| n=7, H_C completeness | `n7_s1_hc_completeness.py` | per-cell Sturm==iso, all_cells_ok=True |
+| n=7, H_C original-cover validity | `n7_s1_hc_cover_checker.py` / `n7_s1_hc_arb_checker.py` | independent verification of 2604/2604 boxes, Krawczyk/admissibility/P lower bound |
+| n=7, H_C s->1 collar validity | `n7_s1_hc_s1collar.py` | 60 full-parameter interval-Newton boxes tiling [s_max,1], including the regular delta=0 tail |
+| n=7, H_C global exhaustiveness | `n7_s1_hc_exhaustiveness_cert.py` | 2x2-Krawczyk branch graph (2 components), six-cell root/component bijection, certified critical fibers via exact event intervals, parametric c-tubes, quadratic v-enclosures, 3x3 generic-boundary Krawczyk, and an exact u=1 linear-subresultant certificate |
 | n=7, H_C cover (Arb, **formal backend**) | `n7_s1_hc_arb_checker.py` | 2604/2604, global min 7.050005>141/20 |
 | n=7, H_C cover (mpmath, re-check) | `n7_s1_hc_cover_checker.py` | 2604/2604 independent re-verification |
 | n=7, H_C cover build | `n7_s1_hc_arb_refine.py` / `n7_s1_hc_cover_dump.py` | canonical 2604-piece cover → `_hc_cover.json` |
@@ -35,7 +36,7 @@ SHA-256 hashes live in `code/_frozen_logs/`.
 
 ## Exploration / numerical (NOT load-bearing)
 
-`n7_roots.py` (numerical root display — slow, may time out; the *exact* a₇,b₇
+`n7_s1_hc_completeness.py` (superseded numerical midpoint/count cross-check), `n7_roots.py` (numerical root display — slow, may time out; the *exact* a₇,b₇
 isolation lives in `_verify_crossings_in_band.py`), `n7_s1_correct_morse_trace.py`,
 `n7_s1_all_branches_correct_hess.py`, `n7_s1_hc_definitive_trace.py`,
 `n7_s1_hc_Cstruct.py`, `n7_s1_hc_mv_verify.py`, `n7_s1_rho_monotone_check.py`,
@@ -47,10 +48,16 @@ isolation lives in `_verify_crossings_in_band.py`), `n7_s1_correct_morse_trace.p
 
 ## Reproducibility
 
-```
-python code/_frozen_logs/run_n5_s2.*   # see code/_frozen_logs/ for the exact commands
+Run the load-bearing chain from the repository root:
+
+```bash
+python code/verify_ny_spectral.py
+python code/verify_hc_closedform.py
+python code/verify_s1_elimination.py
+python code/n7_s1_hc_s1collar.py
+python code/n7_s1_hc_exhaustiveness_cert.py
+python code/n7_s1_hc_cover_checker.py
+python code/n7_s1_hc_arb_checker.py
 ```
 
-Software: Python 3.13.9, SymPy 1.14, mpmath 1.3, python-flint 0.9 (Arb),
-NumPy 2.4.4, SciPy 1.18. SHA-256 of every formal script and of `paper/n57_paper.md`
-are recorded in `code/_frozen_logs/sha256.txt`.
+`verify_hb_exact_backsub.py` is an optional non-load-bearing diagnostic. Exact package versions are in `code/requirements_lock.txt`; captured output is in `code/_archival_run.txt`.

@@ -1,0 +1,160 @@
+{
+  "n_nodes": 2664,
+  "n_edge_candidates": 2823,
+  "n_certified_edges": 2823,
+  "n_components": 2,
+  "components": [
+    {
+      "component": 0,
+      "n_boxes": 1495,
+      "s_lo": "0",
+      "s_hi": "1",
+      "cover_boxes": 1435,
+      "collar_boxes": 60
+    },
+    {
+      "component": 1,
+      "n_boxes": 1169,
+      "s_lo": "0",
+      "s_hi": "55749571201593/281474976710656",
+      "cover_boxes": 1169,
+      "collar_boxes": 0
+    }
+  ],
+  "cells": [
+    {
+      "cell": 0,
+      "s_lo": "0",
+      "s_hi": "1 - CRootOf(x**3 + 2*x**2 - x - 1, 2)",
+      "sample": "24757783024395218441/250000000000000000000",
+      "n_admissible_roots": 2,
+      "excluded_c_branches": 3,
+      "components": [
+        0,
+        1
+      ],
+      "branch_bijection": true
+    },
+    {
+      "cell": 1,
+      "s_lo": "1 - CRootOf(x**3 + 2*x**2 - x - 1, 2)",
+      "s_hi": "1 - CRootOf(x**8 - 2*x**6 + 2*x**5 + 2*x**4 - 4*x**3 + x**2 + 2*x - 1, 1)",
+      "sample": "31326236105640916743/100000000000000000000",
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 4,
+      "components": [
+        0
+      ],
+      "branch_bijection": true
+    },
+    {
+      "cell": 2,
+      "s_lo": "1 - CRootOf(x**8 - 2*x**6 + 2*x**5 + 2*x**4 - 4*x**3 + x**2 + 2*x - 1, 1)",
+      "s_hi": "1 - CRootOf(x**3 - x**2 + 2*x - 1, 0)",
+      "sample": "42931108345980166071/100000000000000000000",
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 4,
+      "components": [
+        0
+      ],
+      "branch_bijection": true
+    },
+    {
+      "cell": 3,
+      "s_lo": "1 - CRootOf(x**3 - x**2 + 2*x - 1, 0)",
+      "s_hi": "1 - CRootOf(2*x**7 - 3*x**6 + 8*x**5 - 2*x**4 + 8*x**3 - x**2 + 2*x - 1, 0)",
+      "sample": "53223530246620871979/100000000000000000000",
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 3,
+      "components": [
+        0
+      ],
+      "branch_bijection": true
+    },
+    {
+      "cell": 4,
+      "s_lo": "1 - CRootOf(2*x**7 - 3*x**6 + 8*x**5 - 2*x**4 + 8*x**3 - x**2 + 2*x - 1, 0)",
+      "s_hi": "1 - CRootOf(x**5 - 3*x**4 + 6*x**3 - 7*x**2 + 5*x - 1, 0)",
+      "sample": "66951074742247679609/100000000000000000000",
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 3,
+      "components": [
+        0
+      ],
+      "branch_bijection": true
+    },
+    {
+      "cell": 5,
+      "s_lo": "1 - CRootOf(x**5 - 3*x**4 + 6*x**3 - 7*x**2 + 5*x - 1, 0)",
+      "s_hi": "1",
+      "sample": "42617764972862072167/50000000000000000000",
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 3,
+      "components": [
+        0
+      ],
+      "branch_bijection": true
+    }
+  ],
+  "all_cells_branch_bijection": true,
+  "critical_fibers": [
+    {
+      "fiber": 0,
+      "critical_s": "1 - CRootOf(x**3 + 2*x**2 - x - 1, 2)",
+      "critical_s_evalf": 0.19806226419516174,
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 4,
+      "components": [
+        0
+      ],
+      "all_admissible_roots_boxed": true
+    },
+    {
+      "fiber": 1,
+      "critical_s": "1 - CRootOf(x**8 - 2*x**6 + 2*x**5 + 2*x**4 - 4*x**3 + x**2 + 2*x - 1, 1)",
+      "critical_s_evalf": 0.4284624579176566,
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 4,
+      "components": [
+        0
+      ],
+      "all_admissible_roots_boxed": true
+    },
+    {
+      "fiber": 2,
+      "critical_s": "1 - CRootOf(x**3 - x**2 + 2*x - 1, 0)",
+      "critical_s_evalf": 0.4301597090019467,
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 4,
+      "components": [
+        0
+      ],
+      "all_admissible_roots_boxed": true
+    },
+    {
+      "fiber": 3,
+      "critical_s": "1 - CRootOf(2*x**7 - 3*x**6 + 8*x**5 - 2*x**4 + 8*x**3 - x**2 + 2*x - 1, 0)",
+      "critical_s_evalf": 0.6343108959304707,
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 3,
+      "components": [
+        0
+      ],
+      "all_admissible_roots_boxed": true
+    },
+    {
+      "fiber": 4,
+      "critical_s": "1 - CRootOf(x**5 - 3*x**4 + 6*x**3 - 7*x**2 + 5*x - 1, 0)",
+      "critical_s_evalf": 0.7047105989144828,
+      "n_admissible_roots": 1,
+      "excluded_c_branches": 3,
+      "components": [
+        0
+      ],
+      "all_admissible_roots_boxed": true
+    }
+  ],
+  "all_critical_admissible_roots_boxed": true,
+  "n_critical_values": 5,
+  "method": "2x2 Krawczyk branch graph + exact event cells + parametric critical-fiber c-tubes + outward quadratic enumeration + 3x3 generic-boundary Krawczyk + exact u=1 linear subresultant"
+}

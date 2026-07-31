@@ -83,3 +83,13 @@ Thumbs.db
 /_poll_*.sh
 /_gpt_b64.txt
 /phase4_out.txt
+
+# --- GPT rev-4 verification staging (downloaded from ChatGPT for local audit; not part of the proof) ---
+/_gpt_rev4.zip
+/_gpt_rev4_paper.pdf
+/_gpt_rev4_extract/
+/_gpt_rev4_*.txt
+
+# --- scratch / exploration scripts used during the audit (not load-bearing) ---
+code/_scratch_*.py
+code/_gpt_verdict*.txt

@@ -53,10 +53,15 @@ P LOWER BOUND (two regimes).
     are evaluated.  (delta=0 itself has c=v=0 => K=0, NOT admissible, so the
     admissible set is delta > 0 and is fully covered.)
 
-KRAWCZYK UNIQUENESS.  At each delta-subinterval midpoint, interval-Newton in
-cbar (then vbar) proves a UNIQUE admissible root in the certified box, with
-N(box) subset int(box); the regular Jacobians dGbar/dcbar (~-1) and
-dE2bar/dvbar (~1) are bounded away from 0, so contraction holds.
+PARAMETRIC INTERVAL-NEWTON UNIQUENESS.  For every full parameter interval
+D=[delta_a,delta_b], interval Newton is evaluated with D itself (not only its
+midpoint): first for cbar in Gbar(cbar,D)=0, then for vbar in
+E2bar(vbar,Cbar,D)=0.  The inclusions N(Cbar;D) subset int(Cbar) and
+N(Vbar;Cbar,D) subset int(Vbar) prove a unique root tube throughout the whole
+piece.  The same full-D inclusions are independently re-derived from the
+recorded exact rational boxes.  The regular Jacobians dGbar/dcbar (~-1) and
+dE2bar/dvbar (~1) stay bounded away from zero, including the closed tail
+D=[0,10^-10].
 
 OUTPUT.  code/_hc_s1collar.json : collar pieces in ORIGINAL (c,v,s) coords
 (keys s,C,V + lower bounds, same schema as _hc_cover.json, so the existing
@@ -68,7 +73,7 @@ Load-bearing EXHAUSTIVENESS certificate for the s->1 tail; box VALIDITY of each
 collar piece is certified here by direct interval P (and re-checkable).
 """
 import sympy as sp, mpmath as mp, json, time, fractions
-mp.mp.ivprec = 260; IV = mp.iv; mp.mp.prec = 200
+IV = mp.iv; IV.prec = 260; mp.mp.prec = 200
 
 # ---- helpers (mirror rigorous_cert.py) ----
 def iv(x):
@@ -109,10 +114,24 @@ def iv_to_rat_inward(I, ndig=30):
         return iv_to_rat(I)
     return [lo_rat, hi_rat]
 
+def iv_to_rat_outward(I, ndig=40):
+    """Exact rational enclosure OUTSIDE the certified interval.
+
+    The stored box must contain the whole parametric root tube.  Rounding inward
+    would destroy the certificate.  For positive endpoints we use decimal floor
+    for the lower bound and decimal ceil for the upper bound.
+    """
+    scale = mp.mpf(10) ** ndig
+    lo = mp.mpf(I.a); hi = mp.mpf(I.b)
+    lo_i = int(mp.floor(lo * scale))
+    hi_i = int(mp.ceil(hi * scale))
+    return [fractions.Fraction(lo_i, 10**ndig),
+            fractions.Fraction(hi_i, 10**ndig)]
+
 # ---- exec symbol-building part of rigorous_cert.py (gives _E2u_cs, etc.) ----
 src = open('code/n7_s1_hc_rigorous_cert.py').read().split('with open')[0]
 exec(src)
-mp.mp.ivprec = 260; IV = mp.iv; mp.mp.prec = 200   # re-raise (rigorous_cert set 110)
+IV = mp.iv; IV.prec = 260; mp.mp.prec = 200   # re-raise (rigorous_cert set 110)
 _c, _v, _s = sp.symbols('c v s')
 Gexpr = (1 - _s) * _c**3 + (1 - _s) * (_s - 2) * _c**2 + (_s**2 - _s - 1) * _c + (1 - _s)
 
@@ -172,12 +191,15 @@ def E2bar_iv(vbi, cbi, di):  return iv_eval(E2bar, {cb: cbi, vb: vbi, d: di})
 def E2barv_iv(vbi, cbi, di): return iv_eval(E2bar_vb, {cb: cbi, vb: vbi, d: di})
 
 # ---- rescaled admissibility (all regular, O(1), no underflow) ----
-def adm_rescaled(cbi, vbi, di):
+def adm_rescaled(cbi, vbi, di, allow_delta_zero=False):
     """Certify admissibility for delta>0 via regular rescaled quantities."""
     env = {cb: cbi, vb: vbi, d: di}
     cbv, vbv, dv = iv(cbi), iv(vbi), iv(di)
     if not (cbv.a > 0 and vbv.a > 0): return False, None
-    if not (dv.a > 0 and dv.b < 1): return False, None
+    if allow_delta_zero:
+        if not (dv.a >= 0 and dv.b < 1): return False, None
+    else:
+        if not (dv.a > 0 and dv.b < 1): return False, None
     omw = iv_eval(omw_b, env); omt = iv_eval(omt_b, env); a5 = iv_eval(a5_b, env)
     if omw.a <= 0 or omt.a <= 0 or a5.a <= 0: return False, None
     rhot7_iv = iv_eval(rhot7, env)
@@ -237,31 +259,74 @@ def P_crude_blown(cbi, vbi, di):
     return float(db_term * cb_term * factor_7th)
 
 # ---- Krawczyk in cbar / vbar at scalar delta ----
+def _strict_subset(K, W):
+    return K.a > W.a and K.b < W.b
+
 def krawczyk_cbar(D, c0):
+    """Uniform interval-Newton tube for Gbar(cbar,delta)=0 over the FULL D."""
     C = IV.mpf([mp.mpf(c0) - mp.mpf('0.05'), mp.mpf(c0) + mp.mpf('0.05')])
-    for _ in range(100):
+    for _ in range(120):
         dG = Gbarc_iv(C, D)
-        if dG.a <= 0 <= dG.b: return None
-        m = iv_mid(C); K = iv(m) - Gbar_iv(iv(m), D) / dG
-        Cn = iv_isect(K, C)
-        if Cn is None: return None
-        if K.a >= Cn.a and K.b <= Cn.b and (Cn.b - Cn.a) < mp.mpf('1e-14'):
-            return Cn
+        if dG.a <= 0 <= dG.b:
+            return None
+        m = iv_mid(C)
+        N = iv(m) - Gbar_iv(iv(m), D) / dG
+        if _strict_subset(N, C):
+            # Keep a small outward hull around N, then verify once more on it.
+            width = max(mp.mpf(N.b)-mp.mpf(N.a), mp.mpf('1e-35'))
+            pad = max(width/8, mp.mpf('1e-30'))
+            C2 = IV.mpf([mp.mpf(N.a)-pad, mp.mpf(N.b)+pad])
+            d2 = Gbarc_iv(C2, D)
+            if not (d2.a <= 0 <= d2.b):
+                N2 = iv(iv_mid(C2)) - Gbar_iv(iv(iv_mid(C2)), D) / d2
+                if _strict_subset(N2, C2):
+                    return C2
+        Cn = iv_isect(N, C)
+        if Cn is None:
+            return None
         C = Cn
-    return C if (C.b - C.a) < mp.mpf('1e-12') else None
+    return None
 
 def krawczyk_vbar(Cbar, D, v0):
+    """Uniform interval-Newton tube for E2bar(vbar,cbar,delta)=0 over Cbar x D."""
     V = IV.mpf([mp.mpf(v0) - mp.mpf('0.05'), mp.mpf(v0) + mp.mpf('0.05')])
-    for _ in range(80):
+    for _ in range(120):
         dE = E2barv_iv(V, Cbar, D)
-        if dE.a <= 0 <= dE.b: return None
-        m = iv_mid(V); K = iv(m) - E2bar_iv(iv(m), Cbar, D) / dE
-        Vn = iv_isect(K, V)
-        if Vn is None: return None
-        if K.a >= Vn.a and K.b <= Vn.b and (Vn.b - Vn.a) < mp.mpf('1e-14'):
-            return Vn
+        if dE.a <= 0 <= dE.b:
+            return None
+        m = iv_mid(V)
+        N = iv(m) - E2bar_iv(iv(m), Cbar, D) / dE
+        if _strict_subset(N, V):
+            width = max(mp.mpf(N.b)-mp.mpf(N.a), mp.mpf('1e-35'))
+            pad = max(width/8, mp.mpf('1e-30'))
+            V2 = IV.mpf([mp.mpf(N.a)-pad, mp.mpf(N.b)+pad])
+            d2 = E2barv_iv(V2, Cbar, D)
+            if not (d2.a <= 0 <= d2.b):
+                N2 = iv(iv_mid(V2)) - E2bar_iv(iv(iv_mid(V2)), Cbar, D) / d2
+                if _strict_subset(N2, V2):
+                    return V2
+        Vn = iv_isect(N, V)
+        if Vn is None:
+            return None
         V = Vn
-    return V if (V.b - V.a) < mp.mpf('1e-12') else None
+    return None
+
+def verify_parametric_newton(Cbar, Vbar, D):
+    dG = Gbarc_iv(Cbar, D)
+    if dG.a <= 0 <= dG.b:
+        return False, 'dG0'
+    mc = iv_mid(Cbar)
+    Nc = iv(mc) - Gbar_iv(iv(mc), D) / dG
+    if not _strict_subset(Nc, Cbar):
+        return False, 'Nc'
+    dE = E2barv_iv(Vbar, Cbar, D)
+    if dE.a <= 0 <= dE.b:
+        return False, 'dE0'
+    mv = iv_mid(Vbar)
+    Nv = iv(mv) - E2bar_iv(iv(mv), Cbar, D) / dE
+    if not _strict_subset(Nv, Vbar):
+        return False, 'Nv'
+    return True, None
 
 # ---- connect to existing cover: seed from last box at s=s_max ----
 _cov = json.load(open('code/_hc_cover.json'))
@@ -308,21 +373,20 @@ t0 = time.time()
 n_fail = 0
 
 def certify_delta_box(da, db, cs, vs):
-    """Certify Fraction delta-box [da,db] via Krawczyk(mid) + rescaled adm + direct P.
-    Records EXACT rational bounds (s=1-delta, C=delta*cbar, V=delta*vbar) so that
-    adjacent pieces abut exactly and the seam s_lo[0]=s_max is exact."""
-    dm = (da + db) / 2                                  # Fraction midpoint
-    Cbar = krawczyk_cbar(iv_rat(dm), float(cs))
-    if Cbar is None: return None
-    Vbar = krawczyk_vbar(Cbar, iv_rat(dm), float(vs))
-    if Vbar is None: return None
+    """Certify the whole Fraction parameter box D=[da,db]."""
     Dbox = iv_box_rat(da, db)
+    Cbar = krawczyk_cbar(Dbox, float(cs))
+    if Cbar is None: return None
+    Vbar = krawczyk_vbar(Cbar, Dbox, float(vs))
+    if Vbar is None: return None
+    nk_ok, _ = verify_parametric_newton(Cbar, Vbar, Dbox)
+    if not nk_ok: return None
     ok, info = adm_rescaled(Cbar, Vbar, Dbox)
     if not ok: return None
     P_lo = P_direct_blown(Cbar, Vbar, Dbox)
     if P_lo is None or P_lo <= float(L_C): return None
-    cb_lo, cb_hi = iv_to_rat_inward(Cbar)              # rational INSIDE certified mpf box
-    vb_lo, vb_hi = iv_to_rat_inward(Vbar)
+    cb_lo, cb_hi = iv_to_rat_outward(Cbar)
+    vb_lo, vb_hi = iv_to_rat_outward(Vbar)
     # exact rational original-coord bounds: c = delta*cbar, s = 1-delta
     c_lo, c_hi = da * cb_lo, db * cb_hi
     v_lo, v_hi = da * vb_lo, db * vb_hi
@@ -334,7 +398,7 @@ def certify_delta_box(da, db, cs, vs):
         plo=P_lo, rho7_lo=info['rhot7_lo'], A5_lo=info['a5_lo'],
         omt_lo=info['omt_lo'], omw_lo=info['omw_lo'], K_lo=info['K_lo'],
         Ktilde_lo=info['Ktilde_lo'], uhat_lo=info['uhat_lo'],
-        krawczyk_unique=True, method='direct_interval_P')
+        krawczyk_unique=True, parametric_newton=True, method='direct_interval_P')
     return piece, iv_mid(Cbar), iv_mid(Vbar), P_lo
 
 d_cur = fractions.Fraction(delta0)
@@ -360,45 +424,39 @@ while d_cur > delta_direct and not stalled:
         print("  %d pieces, d_cur=%.6f P_lo=%.4f h=%.4e" % (len(pieces), float(d_cur), P_lo, float(h)), flush=True)
 print("direct sweep done: %d pieces, d_cur=%.3e" % (len(pieces), float(d_cur)), flush=True)
 
-# ---- crude tail: (0, delta_direct] via rescaled adm + crude P (bisect if wide) ----
-# The admissible set is delta>0 (delta=0 gives c=v=0 => K=0, inadmissible).  Both
-# the crude P bound (P >= delta^{-1/7}*(regular), monotone DECREASING in delta) and
-# the rescaled admissibility (v=delta*vbar<1 etc., worst at LARGEST delta) have their
-# worst case at delta=db.  So certify each tail sub-interval (da,db] at the POINT
-# delta=db; this certifies the whole (da,db] by monotonicity.  da=0 is the excluded
-# endpoint (delta=0 inadmissible), so the box (0,db] is fully covered.
-print("\n=== crude tail (0, delta_direct] ===", flush=True)
-tail_stack = [(fractions.Fraction(0), delta_direct)]
-while tail_stack:
-    da, db = tail_stack.pop()
-    Cbc = IV.mpf([mp.mpf('0.90'), mp.mpf('1.10')])
-    Vbc = IV.mpf([mp.mpf('0.90'), mp.mpf('1.10')])
-    Dbox_adm = iv_rat(db)                  # POINT at db (worst case for adm)
-    ok, info = adm_rescaled(Cbc, Vbc, Dbox_adm)
-    if not ok:
-        if (db - da) < MINS:
-            n_fail += 1; print("  tail BISECT LIMIT [%.3e,%.3e]" % (float(da), float(db)), flush=True); continue
-        mid = (da + db) / 2; tail_stack.append((da, mid)); tail_stack.append((mid, db)); continue
-    Dbox_P = iv_box_rat(da, db)            # [da,db]; crude P uses db (upper) -> min
-    P_lo = P_crude_blown(Cbc, Vbc, Dbox_P)
-    if P_lo is None or P_lo <= float(L_C):
-        if (db - da) < MINS:
-            n_fail += 1; print("  tail P fail [%.3e,%.3e] P=%s" % (float(da), float(db), P_lo), flush=True); continue
-        mid = (da + db) / 2; tail_stack.append((da, mid)); tail_stack.append((mid, db)); continue
-    cb_lo, cb_hi = fractions.Fraction('0.90'), fractions.Fraction('1.10')
-    vb_lo, vb_hi = fractions.Fraction('0.90'), fractions.Fraction('1.10')
-    c_lo, c_hi = da * cb_lo, db * cb_hi
-    v_lo, v_hi = da * vb_lo, db * vb_hi
-    s_lo, s_hi = 1 - db, 1 - da
-    pieces.append(dict(
-        s=[str(s_lo), str(s_hi)], C=[str(c_lo), str(c_hi)], V=[str(v_lo), str(v_hi)],
-        cbar=[str(cb_lo), str(cb_hi)], vbar=[str(vb_lo), str(vb_hi)],
-        delta=[str(da), str(db)],
-        plo=P_lo, rho7_lo=info['rhot7_lo'], A5_lo=info['a5_lo'],
-        omt_lo=info['omt_lo'], omw_lo=info['omw_lo'], K_lo=info['K_lo'],
-        Ktilde_lo=info['Ktilde_lo'], uhat_lo=info['uhat_lo'],
-        krawczyk_unique=False, method='crude_d^{-1/7}_tail',
-        tail_certified_at_db_by_monotonicity=True))
+# ---- regular tiny-delta tail: [0, delta_direct] via parametric interval Newton ----
+# The equations are regular at delta=0.  We prove a unique root tube on the entire
+# closed parameter interval, then restrict admissibility to delta>0; delta=0 itself
+# is the excluded K=0 endpoint.
+print("\n=== regular parametric tail [0, delta_direct] ===", flush=True)
+da, db = fractions.Fraction(0), delta_direct
+Dtail = iv_box_rat(da, db)
+Cbc = krawczyk_cbar(Dtail, 1.0)
+Vbc = krawczyk_vbar(Cbc, Dtail, 1.0) if Cbc is not None else None
+if Cbc is None or Vbc is None:
+    raise RuntimeError("parametric Newton failed on tiny-delta tail")
+nk_ok, why = verify_parametric_newton(Cbc, Vbc, Dtail)
+if not nk_ok:
+    raise RuntimeError("tail parametric Newton recheck failed: %s" % why)
+ok, info = adm_rescaled(Cbc, Vbc, Dtail, allow_delta_zero=True)
+if not ok:
+    raise RuntimeError("tail rescaled admissibility failed")
+P_lo = P_crude_blown(Cbc, Vbc, Dtail)
+if P_lo is None or P_lo <= float(L_C):
+    raise RuntimeError("tail P bound failed: %s" % P_lo)
+cb_lo, cb_hi = iv_to_rat_outward(Cbc)
+vb_lo, vb_hi = iv_to_rat_outward(Vbc)
+c_lo, c_hi = da * cb_lo, db * cb_hi
+v_lo, v_hi = da * vb_lo, db * vb_hi
+s_lo, s_hi = 1 - db, 1 - da
+pieces.append(dict(
+    s=[str(s_lo), str(s_hi)], C=[str(c_lo), str(c_hi)], V=[str(v_lo), str(v_hi)],
+    cbar=[str(cb_lo), str(cb_hi)], vbar=[str(vb_lo), str(vb_hi)],
+    delta=[str(da), str(db)], plo=P_lo, rho7_lo=info['rhot7_lo'],
+    A5_lo=info['a5_lo'], omt_lo=info['omt_lo'], omw_lo=info['omw_lo'],
+    K_lo=info['K_lo'], Ktilde_lo=info['Ktilde_lo'], uhat_lo=info['uhat_lo'],
+    krawczyk_unique=True, parametric_newton=True,
+    method='crude_d^{-1/7}_tail', delta0_excluded_admissibility=True))
 
 # ---- INDEPENDENT RE-VERIFICATION on the recorded EXACT rational pieces ----
 # Re-evaluate the desingularized P lower bound AND rescaled admissibility on the
@@ -418,10 +476,12 @@ for i, p in enumerate(pieces):
     ddr = [fractions.Fraction(p['delta'][0]), fractions.Fraction(p['delta'][1])]
     Cbi = iv_box_rat(cbr[0], cbr[1]); Vbi = iv_box_rat(vbr[0], vbr[1])
     is_tail = p['method'].startswith('crude')
-    # tail: adm certified at POINT delta=db (worst case by monotonicity); P on [da,db]
-    Dbi_adm = iv_rat(ddr[1]) if is_tail else iv_box_rat(ddr[0], ddr[1])
-    Dbi_P = iv_box_rat(ddr[0], ddr[1])
-    ok_re, info_re = adm_rescaled(Cbi, Vbi, Dbi_adm)
+    Dbi_adm = iv_box_rat(ddr[0], ddr[1])
+    Dbi_P = Dbi_adm
+    nk_re, nk_why = verify_parametric_newton(Cbi, Vbi, Dbi_P)
+    if not nk_re:
+        n_bad_adm += 1; print("  NEWTON-REVIFY FAIL piece %d: %s" % (i, nk_why), flush=True)
+    ok_re, info_re = adm_rescaled(Cbi, Vbi, Dbi_adm, allow_delta_zero=is_tail)
     if not ok_re:
         n_bad_adm += 1; print("  ADM-REVIFY FAIL piece %d" % i, flush=True)
     Pfun = P_crude_blown if is_tail else P_direct_blown
@@ -459,7 +519,7 @@ out = dict(L_C=str(LC_rat), s_max=str(s_max), delta0=str(delta0),
            n_failures=n_fail, reverify_ok=all_revify_ok,
            seam_at_s_max=bool(seam_lo == s_max), seam_at_1=bool(seam_hi == 1),
            abutment_exact=(n_bad_abut == 0),
-           method="second_blowup(d=1-s,c=dcbar,v=dvbar); Krawczyk(cbar,vbar); "
+           method="second_blowup(d=1-s,c=dcbar,v=dvbar); parametric interval-Newton(cbar,vbar; full delta boxes); "
                   "rescaled admissibility; direct interval P (d>=1e-10) + crude d^{-1/7} tail; "
                   "independent desingularized re-verify on exact rational bounds; exact-Fraction abutment",
            pieces=pieces)

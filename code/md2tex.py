@@ -128,13 +128,22 @@ while i < len(lines):
                 parts.append(t)
                 i += 1
             body = "\n".join(parts)
-        # long/wide equations: scale to text width (strip redundant size cmds)
-        longq = len(body) > 160 or any(cmd in body for cmd in (r"\small", r"\scriptsize", r"\tiny", r"\footnotesize"))
-        if longq:
+        # long/wide equations: if the author hand-broke the formula with an
+        # amsmath multi-line env (aligned/split/multline/align), render it
+        # verbatim (no \resizebox — that would shrink it to an unreadable
+        # single line and defeat the explicit line breaks). The author's
+        # \small/\scriptsize is PRESERVED here (it is a deliberate size choice
+        # for genuinely wide content such as long coefficient vectors); only
+        # the \resizebox fallback below strips size commands.
+        has_multiline = any(env in body for env in
+                            (r"\begin{aligned}", r"\begin{split}", r"\begin{multline}", r"\begin{align}"))
+        if has_multiline:
+            out.append("\\[" + body + "\\]")
+        elif len(body) > 160 or any(cmd in body for cmd in (r"\small", r"\scriptsize", r"\tiny", r"\footnotesize")):
             b2 = re.sub(r"\\(small|scriptsize|tiny|footnotesize)\s*", "", body)
-            out.append(r"\begin{equation*}\resizebox{\textwidth}{!}{$\displaystyle "+b2+r"$}\end{equation*}")
+            out.append(r"\begin{equation*}\resizebox{\textwidth}{!}{$\displaystyle " + b2 + r"$}\end{equation*}")
         else:
-            out.append("\\["+body+"\\]")
+            out.append("\\[" + body + "\\]")
         out.append("")
         continue
     # table row
@@ -244,10 +253,13 @@ preamble = r"""\documentclass[11pt,a4paper]{article}
 \begin{document}
 \maketitle
 \sloppy
-\emergencystretch=3em
+\emergencystretch=4em
 """
 # author line is lines[2] -> **薛炜鹏 (Weipeng Xue)** — 中山大学 ... ; conv_inline converts **..**
 auth_tex = conv_inline(lines[2].rstrip("\n"))
+# break the author block after the name (name on line 1, affiliation + email on
+# line 2) so the bold name + long affiliation line does not overflow the title block
+auth_tex = auth_tex.replace(" — ", r" \\ ", 1)
 preamble = preamble.replace("TITLE", title_tex.replace("{",r"\{").replace("}",r"\}"))
 preamble = preamble.replace("AUTH", auth_tex)
 

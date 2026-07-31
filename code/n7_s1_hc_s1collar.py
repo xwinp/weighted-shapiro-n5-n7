@@ -72,7 +72,7 @@ The collar extends the cover from s_max to s=1, closing the exhaustiveness gap.
 Load-bearing EXHAUSTIVENESS certificate for the s->1 tail; box VALIDITY of each
 collar piece is certified here by direct interval P (and re-checkable).
 """
-import sympy as sp, mpmath as mp, json, time, fractions
+import sympy as sp, mpmath as mp, json, time, fractions, sys
 IV = mp.iv; IV.prec = 260; mp.mp.prec = 200
 
 # ---- helpers (mirror rigorous_cert.py) ----
@@ -523,8 +523,15 @@ out = dict(L_C=str(LC_rat), s_max=str(s_max), delta0=str(delta0),
                   "rescaled admissibility; direct interval P (d>=1e-10) + crude d^{-1/7} tail; "
                   "independent desingularized re-verify on exact rational bounds; exact-Fraction abutment",
            pieces=pieces)
-with open('code/_hc_s1collar.json', 'w') as f:
-    json.dump(out, f, indent=2)
-print("Wrote code/_hc_s1collar.json", flush=True)
+# Machine record: read-only by default so a clean-checkout re-run does not
+# dirty the tree (the committed JSON is verified by the cover/Arb checkers).
+# Pass --write-record to (re)write; output is canonical LF (newline='\n') so
+# the file is byte-identical whether regenerated on Windows or Linux.
+if "--write-record" in sys.argv:
+    with open('code/_hc_s1collar.json', 'w', newline='\n') as f:
+        json.dump(out, f, indent=2)
+    print("Wrote code/_hc_s1collar.json (LF, --write-record)", flush=True)
+else:
+    print("Read-only: code/_hc_s1collar.json not rewritten (pass --write-record to update)", flush=True)
 print("DONE-S1COLLAR n=%d gmin=%.6f gmin_re=%.6f >L_C=%s revify=%s seam=%s abut=%s" % (
     len(pieces), gmin, gmin_re, gmin_re > float(L_C), all_revify_ok, seam_ok, n_bad_abut == 0), flush=True)

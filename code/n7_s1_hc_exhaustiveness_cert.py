@@ -35,6 +35,7 @@ one of the certified boxes.
 from __future__ import annotations
 
 import json
+import sys
 from collections import Counter, defaultdict
 from fractions import Fraction
 from pathlib import Path
@@ -762,7 +763,15 @@ def main():
         "n_critical_values": len(crit_s),
         "method": "2x2 Krawczyk branch graph + exact event cells + parametric critical-fiber c-tubes + outward quadratic enumeration + 3x3 generic-boundary Krawczyk + exact u=1 linear subresultant",
     }
-    (CODE / "_hc_exhaustiveness.json").write_text(json.dumps(out, indent=2))
+    # Machine record: read-only by default so a clean-checkout re-run does not
+    # dirty the tree (the committed JSON is verified by the cover/Arb checkers).
+    # Pass --write-record to (re)write; output is canonical LF (newline='\n') so
+    # the file is byte-identical whether regenerated on Windows or Linux.
+    if "--write-record" in sys.argv:
+        (CODE / "_hc_exhaustiveness.json").write_text(json.dumps(out, indent=2), newline='\n')
+        print("Wrote code/_hc_exhaustiveness.json (LF, --write-record)", flush=True)
+    else:
+        print("Read-only: code/_hc_exhaustiveness.json not rewritten (pass --write-record to update)", flush=True)
     print(
         "DONE-EXHAUSTIVENESS components=%d cells=%d fibers=%d edges=%d" %
         (len(comps), len(cells), len(crit_s), len(edges)),

@@ -11,7 +11,7 @@
 Tuan and Thuong [2] introduced the weighted Shapiro cyclic inequality
 $$P_{n,p,q}(x):=\sum_{i=0}^{n-1}\frac{x_i}{p\,x_{i+1}+q\,x_{i+2}}\ge\frac{n}{p+q},\qquad x_{i+n}=x_i,\ x_i\ge0,$$
 and posed, as Open Question (b), the problem of finding — for each fixed $n$ — sufficient conditions on $(p,q)$ for the inequality to hold. Both sides scale by the same factor under $(p,q)\mapsto c(p,q)$, so we normalize $p+q=1$ (bound $n$) and study the **holding region**
-$$H_n=\{p\in(0,1):P_{n,p,1-p}(x)\ge n\ \forall\,x\ \text{admissible}\}=\{p:m_n(p)\ge n\},\qquad m_n(p)=\inf_x P_{n,p,1-p}(x),$$
+$$H_n=\{p\in(0,1):P_{n,p,1-p}(x)\ge n\ \forall\,x\ \text{admissible}\}=\{p:m_n(p)\ge n\},\quad m_n(p)=\inf_x P_{n,p,1-p}(x).$$
 where *admissible* means $x_i\ge0$ and $p\,x_{i+1}+q\,x_{i+2}>0$ for all $i$. Our result is a stronger, exact answer to that question for $n=5,7$.
 
 We determine $H_5$ and $H_7$ **completely and rigorously**:
@@ -119,7 +119,10 @@ $$p\,b+q\,c=q\,a^2,\qquad p\,c+q=\frac{q^2 a^3}{p},\qquad\boxed{\,q^3 a^6-p^3 a^
 **No-crossing certificate.** The degree-$0$ target is $M:=(1+r)\widetilde P_r-5$. Let $N(a,r)=\operatorname{num}((1+r)\widetilde P_r-5)$ on the branch. Eliminating $a$:
 $$\operatorname{Res}_a\!\bigl(a^6-r^3a^2-r^2,\;N(a,r)\bigr)=r^{17}\,Q_{11}(r),$$
 where (coefficients high-to-low)
-$$Q_{11}(r)=1024r^{11}+3644r^{10}+6360r^{9}+11580r^{8}+15895r^{7}+28772r^{6}+23892r^{5}+21120r^{4}+9360r^{3}+7680r^{2}+2368r+1728.$$
+$$\begin{aligned}
+Q_{11}(r)={}&1024r^{11}+3644r^{10}+6360r^{9}+11580r^{8}+15895r^{7}+28772r^{6}\\
+&+23892r^{5}+21120r^{4}+9360r^{3}+7680r^{2}+2368r+1728.
+\end{aligned}$$
 **Every coefficient of $Q_{11}$ is positive**, so $Q_{11}(r)>0$ for all $r>0$. Since $r>0$ on the branch and $Q_{11}$ is (up to the prefactor $r^{17}$) the crossing resultant, $M$ **never vanishes** on the stationary curve: $P\neq5$ there. The sign is constant on the connected branch, and it suffices to evaluate at one point.
 
 **Sign certificate at $r=1$.** At $r=1$ ($p=q=1/2$) the curve is $a^6-a^2-1=0$; its unique positive root is isolated in $a\in(1.150,\,1.151)$ ($f(1.150)=-604111/64000000<0<f(1.151)=354174281094401/10^{15}$, and $f'(a)=6a^5-2a>0$ on this interval, so the root is unique there). On this interval rational interval arithmetic gives
@@ -157,7 +160,10 @@ $$\min_p P_{S_4}=\frac{16}{3^{3/4}}\approx7.0190614>7\qquad(16^4=65536>64827=7^4
 - **$S_3$ — exact sign certificate.** With $r=(q/p)^{1/5}$, the KKT solution is $b=r^2,c=r^{-1},e=r^3,d=r(1-r^7)$; $d>0\iff r<1\iff p>1/2$. For $p\le1/2$ (the whole failure band $(a_7,b_7)\subset(0,1/3)$) there is **no** positive interior stationary point, so $\inf_{S_3}P$ is attained on $\partial S_3\subset S_4$ and is $>7$. For $p>1/2$ (so $0<r<1$) the stationary value is
 $$P_{S_3}^{\rm stat}(r)=\frac{(1+r^5)(5-r^7)}{r^2}.$$
 The **exact identity**
-$$\bigl(1+r^5\bigr)\bigl(5-r^7\bigr)-8r^2=(1-r)\,H(r),\qquad H(r)=r^{11}+r^{10}+r^9+r^8+r^7+2r^6+2r^5-3r^4-3r^3-3r^2+5r+5,$$
+$$\begin{aligned}
+\bigl(1+r^5\bigr)\bigl(5-r^7\bigr)-8r^2&=(1-r)\,H(r),\\
+H(r)&=r^{11}+r^{10}+r^9+r^8+r^7+2r^6+2r^5-3r^4-3r^3-3r^2+5r+5.
+\end{aligned}$$
 holds (verified by expansion). For $0<r<1$, $H(r)\ge 5+5r-9r^2\ge1$: indeed $H(r)-(5+5r-9r^2)=r^2\!\bigl(r^9+r^8+r^7+r^6+r^5+2r^4+2r^3-3r^2-3r+6\bigr)$ and the bracket is $\ge 6-3r^2-3r=3(2-r^2-r)>0$ on $(0,1)$; and $5+5r-9r^2$ is concave with endpoint values $5,1$, hence $\ge1$. Therefore $P_{S_3}^{\rm stat}-8=\frac{(1-r)H(r)}{r^2}>0$, i.e.
 $$P_{S_3}^{\rm stat}(r)>8>7\qquad(0<r<1).$$
 **$S_3$ never fails.**
@@ -172,7 +178,12 @@ so the stationary point is strictly positive for every $p\in(0,1)$.
 On $R=0$, $P_{\rm curve}-7=\frac{B(p,t)}{q\,p^2}+\frac{R\cdot(\cdots)}{q\,p^3t^4}$, so $P_{\rm curve}=7\iff B=5p^2t+2pqt^4-2q^2-7qp^2=0$. Eliminating $t$:
 $$\operatorname{Res}_t(R,B)=p^{15}(p-1)^6\,F(p),$$
 where $F$ is the irreducible degree-$15$ integer polynomial ($5764801=7^8$ leading, $65536=2^{16}$ trailing):
-$$\small F(p)=5764801 p^{15}-47765494 p^{14}+190003135 p^{13}-486209703 p^{12}+901678743 p^{11}-1287828143 p^{10}+1464952167 p^{9}-1351039522 p^{8}+1017028633 p^{7}-624621984 p^{6}+310300032 p^{5}-122238368 p^{4}+36836352 p^{3}-7952896 p^{2}+1073408 p-65536.$$
+$$\begin{aligned}
+F(p)={}&5764801 p^{15}-47765494 p^{14}+190003135 p^{13}-486209703 p^{12}\\
+&+901678743 p^{11}-1287828143 p^{10}+1464952167 p^{9}-1351039522 p^{8}\\
+&+1017028633 p^{7}-624621984 p^{6}+310300032 p^{5}-122238368 p^{4}\\
+&+36836352 p^{3}-7952896 p^{2}+1073408 p-65536.
+\end{aligned}$$
 **Irreducibility:** $F\bmod23\in\mathbb F_{23}[p]$ is irreducible (leading coeff $7^8\not\equiv0$), so $F$ is irreducible over $\mathbb Q$ (Gauss). **Sturm:** $F$ has exactly two roots in $(0,1)$ — these are
 $$a_7\approx0.21427352090984097\in(1/5,1/4),\qquad b_7\approx0.32862767791659197\in(1/4,1/3)$$
 (a third real root $\approx1.3266$ lies outside).
@@ -224,7 +235,11 @@ $$\operatorname{Res}_w(H_B,L)=z(z-1)\,Q_7(z),$$
 where $Q_7$ is exactly the determinant polynomial below (unique $(0,1)$-root $z_7\approx0.87618$). The unique candidate $L=0$ lift at $z_7$ is $w_L(z_7)=-b(z_7)/a(z_7)$; rational interval arithmetic gives $w_L(z_7)\in[-0.50859,-0.50858]<0$, whereas the branch root is $w_+(z_7)\approx0.24345>0$, so $L\neq0$ on the positive-$w$ branch. A single sign sample fixes the sign: $L(w_+(1/2),1/2)=(-35+5\sqrt{17})/16<0$ (as $\sqrt{17}<7$). Hence $L<0$ throughout, so $K'(z)>0$ and $\rho(z)$ is **strictly increasing**; equivalently $z(p)$ is strictly decreasing and the positive-$w$ branch is a graph over $p\in(0,1)$.
 
 **Determinant sign.** The reduced Hessian determinant on $H_B$ factors as
-$$\operatorname{Res}_w(H_B,\mathrm{num\_red})=4\,z\,(z-1)^9\,Q_5(z)\,Q_7(z),\qquad Q_5=2z^5+2z^3-2z^2-1,\quad Q_7=8z^7-24z^6+20z^5-9z^4+30z^3-15z^2-6.$$
+$$\begin{aligned}
+\operatorname{Res}_w(H_B,\mathrm{num\_red})&=4\,z\,(z-1)^9\,Q_5(z)\,Q_7(z),\\
+Q_5&=2z^5+2z^3-2z^2-1,\\
+Q_7&=8z^7-24z^6+20z^5-9z^4+30z^3-15z^2-6.
+\end{aligned}$$
 **Sturm:** $Q_5$ has a unique root $z_0\approx0.89756$ in $(0,1)$; $Q_7$ has a unique root $z_7\approx0.87618$ in $(0,1)$. Since $\mathrm{num\_red}=P_v(z)\,w+Q_v(z)$ is *linear* in $w$, the determinant vanishes at a single $w$-value $w_{\rm det}=-Q_v/P_v$. At $z_7$, rational interval arithmetic gives $w_{\rm det}(z_7)\in[-0.866,-0.248]<0$, whereas the branch root is $w_+(z_7)\approx0.243>0$; thus $z_7$ is **not** a determinant zero on the positive-$w$ branch. At $z_0$, $w_{\rm det}=w_+(z_0)>0$ (the genuine transition). Hence on the positive-$w$ branch $\det H_{S_1}=0\iff z=z_0$. Sign samples (rational interval, $D>0$):
 $$z=\tfrac{17}{20},\tfrac78\;(<z_0):\ \det>0;\qquad z=\tfrac{9}{10},\tfrac{19}{20}\;(>z_0):\ \det<0.$$
 So $\det H_{S_1}<0$ for $z>z_0$ and $\det>0$ for $z<z_0$. **Load-bearing use:** only the $\det<0$ side is rigorous for the theorem — a negative determinant of a $5\times5$ symmetric Hessian forces an *odd* (hence $\ge1$) number of negative eigenvalues, so the stationary point is a **saddle** for $z>z_0$; this is what defers the in-band infimum to the boundary ($\partial S_1=S_2\cup S_3$) below. The $\det>0$ side ($z<z_0$) is *not* used as a Morse certificate: $\det>0$ permits $0,2,$ or $4$ negative eigenvalues and does not by itself prove a local minimum; the out-of-band conclusion for $p>p_0$ instead rests directly on the stationary *value* $P_{S_1}^{\rm stat}>7$ (Proposition 4.2) together with Proposition 4.3 and the boundary, independent of Hessian index (see "Conclusion for $H_B$" below). By monotonicity $z>z_0\iff p<p_0$ and $z<z_0\iff p>p_0$, where $p_0=1/(1+\rho(z_0))=0.388528131361\ldots$ and rational interval arithmetic gives
@@ -307,7 +322,7 @@ The uniform point is handled by Lemma 2.2: the Hessian eigenvalues $\mu_k=2(1-\c
 Assembling the five face certificates for every $p\in(0,1)$ by **boundary inheritance** ($\inf_{S_0}P=\min\{7,\inf_{S_1}P,\inf_{S_2}P,\inf_{S_3}P,\inf_{S_4}P\}$, and each $\inf_{S_k}$ is itself either an interior stationary value or inherited from $\partial S_k$): $S_0$ contributes the attained uniform value $7$ (unique interior local min, Lemma 2.2, §4.4); $S_4$ gives $P\ge\tfrac{16}{3^{3/4}}>7$ (§4.1); $S_3$ gives $P>8$ ($p>1/2$) or defers to $S_4$ ($p\le1/2$) (§4.1); $S_1$ gives $\inf_{S_1}P\ge7$ out-of-band and $=\inf_{S_2}P$ in-band (Propositions 4.2–4.3, §4.3); and $S_2$ gives $P_{S_2}^{\rm curve}>7$ out-of-band, $<7$ in-band (§4.2). Since $S_4$ is terminal and every boundary recursion lands in one of these faces, the only face that can drop below $7$ is $S_2$, hence
 $$m_7(p)=\min\{7,P_{S_2}^{\rm curve}(p)\},\qquad H_7=(0,a_7]\cup[b_7,1).$$
 The degree-$21$ polynomial
-$$\small\begin{aligned}G(p)=&\,13p^{21}-238p^{20}+1841p^{19}-8295p^{18}+25690p^{17}-60200p^{16}+114261p^{15}\\&-184911p^{14}+263550p^{13}-333970p^{12}+372736p^{11}-359996p^{10}+295750p^9-203770p^8\\&+116300p^7-54264p^6+20349p^5-5985p^4+1330p^3-210p^2+21p-1\end{aligned}$$
+$$\begin{aligned}G(p)=&\,13p^{21}-238p^{20}+1841p^{19}-8295p^{18}+25690p^{17}-60200p^{16}\\&+114261p^{15}-184911p^{14}+263550p^{13}-333970p^{12}+372736p^{11}\\&-359996p^{10}+295750p^9-203770p^8+116300p^7-54264p^6\\&+20349p^5-5985p^4+1330p^3-210p^2+21p-1\end{aligned}$$
 certifies the inactive KKT (Sturm: $0$ roots in $(1/5,1/3)\supset(a_7,b_7)$). $\blacksquare$
 
 *Remark (sharpness vs. $n=5$).* The Tuan–Thuong sufficient interval $I_{\rm TT}=[(5-\sqrt5)/10,(5+\sqrt5)/10]\approx[0.2764,0.7236]$ (a strict subset of $H_5=(0,1)$, Theorem 1) does **not** extend to $n=7$: since $a_7\approx0.2143<(5-\sqrt5)/10\approx0.2764<b_7\approx0.3286$, the whole interval $\bigl((5-\sqrt5)/10,\,b_7\bigr)$ lies in $H_5=(0,1)$ but inside the $n=7$ failure band $(a_7,b_7)$. The transition from "$n=5$ safe everywhere" to "$n=7$ first failure band" is boundary-induced, exactly as the gap-concentration picture predicts (the $L=5$ one-gap face $S_2$ first drops below $7$).

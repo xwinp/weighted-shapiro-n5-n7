@@ -110,7 +110,7 @@ for i,br in enumerate(branches):
         recs.append((t,vv,xx,th,jt))
     if not recs: continue
     taus=[r[0] for r in recs]; vs=[r[1] for r in recs]
-    ths=[r[3] for r in recs if r[3]==r[3]]; jts=[r[4] for r in recs if r[4]==r[4]
+    ths=[r[3] for r in recs if r[3]==r[3]]; jts=[r[4] for r in recs if r[4]==r[4]]
     allpts.append(recs)
     print("branch %d: n=%d tau=[%.3f,%.3f] v=[%.4f,%.4f] min|Theta|=%.4e Theta_max=%.4e min_Jtau=%.4e max_Jtau=%.4e"%(
         i,len(recs),min(taus),max(taus),min(vs),max(vs),

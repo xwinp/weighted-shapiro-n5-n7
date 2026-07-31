@@ -1,7 +1,14 @@
-### Archival run — 7 load-bearing + 3 repaired diagnostic scripts (rev 6)
-### rev 6: load-bearing certificate code identical to rev 4/5; 3 diagnostic scripts
-###         repaired to exact-symbolic (no mpmath.polyroots / no float-truncated Sturm);
-###         md2tex.py blockquote fix; rev-5 editorial corrections retained.
+### Archival run — 7 load-bearing + 3 repaired diagnostic scripts (rev 7)
+### rev 7: NO math changes. Certificate logic of all 7 load-bearing scripts is
+###         identical to rev 4/5/6; only the machine-record WRITE BLOCK of the two
+###         generators (n7_s1_hc_s1collar.py, n7_s1_hc_exhaustiveness_cert.py) changed
+###         to read-only-by-default + canonical LF on --write-record (cross-platform
+###         clean tree). PDF: wide display equations (Q_11, F, Q_7, G, H(r) identity,
+###         Phi_35 coefficient vector) hand-broken to aligned multi-line; md2tex.py
+###         has_multiline exemption (preserve \small/\scriptsize, no resizebox);
+###         0 Overfull hboxes in xelatex log. n9_core_continuation.py syntax fixed.
+###         Generators here run in READ-ONLY mode (default); committed JSONs are
+###         canonical LF and are byte-identically reproduced by --write-record (verified).
 ### host: Windows-11  python: Python 3.13.9  (python-flint==0.9.0 for Arb)
 ### date: 2026-07-31
 
@@ -52,6 +59,91 @@ On the admissible set (w,z in (0,1)) the prefactors w^2, z^2, (w-1)^2 are nonzer
 (beta_3, beta_4 in (0,1)), so H_B H_C = 0, i.e. (w,z) in {H_B=0} U {H_C=0}.
 No third component exists.  (Saturation removes the w=0, z=0, w=1 boundaries.)
 DONE-ELIMINATION
+[exit 0]
+
+================================================================
+### python code/n7_s1_hc_s1collar.py
+================================================================
+s_max = 8840966100154093/9007199254740992 = 0.9815444124321552
+delta0 = 1-s_max = 166233154586899/9007199254740992 = 0.0184555875678448
+L_C = 141/20 = 7.05
+admissible lifts at s=s_max: 1
+seed from admissible lift: c=0.0181213 v=0.0181272 -> cbar=0.981885 vbar=0.982207
+true cbar roots at delta0: [0.9818846897958908]
+exact v-roots at s=s_max: 2
+
+=== Krawczyk arc tracking (delta: delta0 -> delta_direct) ===
+  25 pieces, d_cur=0.006921 P_lo=11.2600 h=4.6139e-04
+  50 pieces, d_cur=0.000000 P_lo=21.8415 h=2.2529e-07
+direct sweep done: 59 pieces, d_cur=1.000e-10
+
+=== regular parametric tail [0, delta_direct] ===
+
+=== independent re-verification on recorded rationals ===
+re-verify: P failures=0, adm failures=0, abutment failures=0
+seam: s_lo[0]==s_max (True) and s_hi[-1]==1 (True) : True
+
+=== summary ===
+collar pieces: 60 ; sweep P_lo min=7.344054 ; re-verify P_lo min=7.344054 > L_C=7.05000
+failures(sweep): 0 ; re-verify ok: True
+elapsed 0.9s
+Read-only: code/_hc_s1collar.json not rewritten (pass --write-record to update)
+DONE-S1COLLAR n=60 gmin=7.344054 gmin_re=7.344054 >L_C=True revify=True seam=True abut=True
+[exit 0]
+
+================================================================
+### python code/n7_s1_hc_exhaustiveness_cert.py
+================================================================
+cell 0: roots=2 components=[0, 1] OK
+cell 1: roots=1 components=[0] OK
+cell 2: roots=1 components=[0] OK
+cell 3: roots=1 components=[0] OK
+cell 4: roots=1 components=[0] OK
+cell 5: roots=1 components=[0] OK
+fiber 0: roots=1 components=[0] OK
+fiber 1: roots=1 components=[0] OK
+fiber 2: roots=1 components=[0] OK
+fiber 3: roots=1 components=[0] OK
+fiber 4: roots=1 components=[0] OK
+Read-only: code/_hc_exhaustiveness.json not rewritten (pass --write-record to update)
+DONE-EXHAUSTIVENESS components=2 cells=6 fibers=5 edges=2823
+[exit 0]
+
+================================================================
+### python code/n7_s1_hc_cover_checker.py
+================================================================
+Checking 2604 pieces, L_C=141/20 ...
+  checked 500/2604 ok=500 fail=0
+  checked 1000/2604 ok=1000 fail=0
+  checked 1500/2604 ok=1500 fail=0
+  checked 2000/2604 ok=2000 fail=0
+  checked 2500/2604 ok=2500 fail=0
+
+Verified pieces: 2604 / 2604
+Failed: 0
+
+ALL PIECES VERIFIED (Krawczyk + admissibility + P_MV > L_C): True
+DONE-CHECKER
+[exit 0]
+
+================================================================
+### python code/n7_s1_hc_arb_checker.py
+================================================================
+Arb re-verification: 2604 pieces, L_C=141/20, prec=150
+  arb-checked 500/2604 ok=500 fail=0
+  arb-checked 1000/2604 ok=1000 fail=0
+  arb-checked 1500/2604 ok=1500 fail=0
+  arb-checked 2000/2604 ok=2000 fail=0
+  arb-checked 2500/2604 ok=2500 fail=0
+
+Arb-verified pieces: 2604 / 2604
+Failed: 0
+ARB GLOBAL MIN P_MV = 7.050005 at piece 1757
+ARB GLOBAL MIN > 7   : True
+REASON TALLY: {}
+
+ALL PIECES Arb-VERIFIED (Krawczyk-unique + admissibility + MV P > L_C): True
+DONE-ARBCHECKER
 [exit 0]
 
 ================================================================
@@ -134,87 +226,4 @@ G0c(center) sign = 1.0
 G5c(center) sign = -1.0
 [exit 0]
 
-================================================================
-### python code/n7_s1_hc_s1collar.py
-================================================================
-s_max = 8840966100154093/9007199254740992 = 0.9815444124321552
-delta0 = 1-s_max = 166233154586899/9007199254740992 = 0.0184555875678448
-L_C = 141/20 = 7.05
-admissible lifts at s=s_max: 1
-seed from admissible lift: c=0.0181213 v=0.0181272 -> cbar=0.981885 vbar=0.982207
-true cbar roots at delta0: [0.9818846897958908]
-exact v-roots at s=s_max: 2
-
-=== Krawczyk arc tracking (delta: delta0 -> delta_direct) ===
-  25 pieces, d_cur=0.006921 P_lo=11.2600 h=4.6139e-04
-  50 pieces, d_cur=0.000000 P_lo=21.8415 h=2.2529e-07
-direct sweep done: 59 pieces, d_cur=1.000e-10
-
-=== regular parametric tail [0, delta_direct] ===
-
-=== independent re-verification on recorded rationals ===
-re-verify: P failures=0, adm failures=0, abutment failures=0
-seam: s_lo[0]==s_max (True) and s_hi[-1]==1 (True) : True
-
-=== summary ===
-collar pieces: 60 ; sweep P_lo min=7.344054 ; re-verify P_lo min=7.344054 > L_C=7.05000
-failures(sweep): 0 ; re-verify ok: True
-elapsed 0.9s
-Wrote code/_hc_s1collar.json
-DONE-S1COLLAR n=60 gmin=7.344054 gmin_re=7.344054 >L_C=True revify=True seam=True abut=True
-[exit 0]
-
-================================================================
-### python code/n7_s1_hc_exhaustiveness_cert.py
-================================================================
-cell 0: roots=2 components=[0, 1] OK
-cell 1: roots=1 components=[0] OK
-cell 2: roots=1 components=[0] OK
-cell 3: roots=1 components=[0] OK
-cell 4: roots=1 components=[0] OK
-cell 5: roots=1 components=[0] OK
-fiber 0: roots=1 components=[0] OK
-fiber 1: roots=1 components=[0] OK
-fiber 2: roots=1 components=[0] OK
-fiber 3: roots=1 components=[0] OK
-fiber 4: roots=1 components=[0] OK
-DONE-EXHAUSTIVENESS components=2 cells=6 fibers=5 edges=2823
-[exit 0]
-
-================================================================
-### python code/n7_s1_hc_cover_checker.py
-================================================================
-Checking 2604 pieces, L_C=141/20 ...
-  checked 500/2604 ok=500 fail=0
-  checked 1000/2604 ok=1000 fail=0
-  checked 1500/2604 ok=1500 fail=0
-  checked 2000/2604 ok=2000 fail=0
-  checked 2500/2604 ok=2500 fail=0
-
-Verified pieces: 2604 / 2604
-Failed: 0
-
-ALL PIECES VERIFIED (Krawczyk + admissibility + P_MV > L_C): True
-DONE-CHECKER
-[exit 0]
-
-================================================================
-### python code/n7_s1_hc_arb_checker.py
-================================================================
-Arb re-verification: 2604 pieces, L_C=141/20, prec=150
-  arb-checked 500/2604 ok=500 fail=0
-  arb-checked 1000/2604 ok=1000 fail=0
-  arb-checked 1500/2604 ok=1500 fail=0
-  arb-checked 2000/2604 ok=2000 fail=0
-  arb-checked 2500/2604 ok=2500 fail=0
-
-Arb-verified pieces: 2604 / 2604
-Failed: 0
-ARB GLOBAL MIN P_MV = 7.050005 at piece 1757
-ARB GLOBAL MIN > 7   : True
-REASON TALLY: {}
-
-ALL PIECES Arb-VERIFIED (Krawczyk-unique + admissibility + MV P > L_C): True
-DONE-ARBCHECKER
-[exit 0]
-
+### end of rev-7 archival run

@@ -11,54 +11,64 @@
 | Group | Path | Count | Role |
 |---|---|---|---|
 | Paper (source of truth) | `paper/n57_paper.md` | 1 | Full proof, $n=5$ and $n=7$ |
-| Exact symbolic certificates | `code/verify_*.py` | 8 | N–Y spectral bridge, $P=C+2\sqrt{AB}$, $S_1$ elimination completeness, $\beta$-reduction, uniform Hessian, $S_3$ closed form, GPT-formula cross-checks |
+| Paper (typeset deliverable) | `paper/n57_paper.pdf` | 1 | 20-page PDF built from the `.md` via `code/md2tex.py` + xelatex |
+| Exact symbolic certificates | `code/verify_*.py` | 14 | N–Y spectral bridge, $P=C+2\sqrt{AB}$, $S_1$ elimination completeness, $H_B$ forward record, $\beta$-reduction, uniform Hessian, $S_3$ closed form, GPT-formula cross-checks |
 | $n=5$ certificates | `code/n5_*.py` | 2 | stationary curve, $M(1)$ interval |
-| $n=7$ certificates | `code/n7_*.py` | 145 | $S_2$ resultant/Sturm/rational-signs, $S_1$ crossing/monotonicity/determinant/three-sample, $H_C$ critical-events/cover/Krawczyk/Arb, inactive-KKT, etc. |
+| $n=7$ certificates | `code/n7_*.py` | 42 | $S_2$ resultant/Sturm/rational-signs, $S_1$ crossing/monotonicity/determinant/three-sample, $H_C$ critical-events/cover/Krawczyk/Arb/exact-completeness, inactive-KKT, etc. |
 | Machine-checkable cover | `code/_hc_cover.json` | 1 | 2604-piece $H_C$ validated cover (rational $s/c/v$ boxes, admissibility lower bounds, $L_C=141/20$) |
-| Completeness summary | `code/_hc_completeness.json` | 1 | per-cell Sturm counts (`all_cells_ok=True`) |
-| Verifier/checker run output | `code/_archival_run.txt` | 1 | captured stdout of all 5 pass scripts (this run) |
+| Exact exhaustiveness cert (output) | `code/_hc_completeness_exact.json` | 1 | per-cell exact Sturm/`CRootOf`/bijective-box-match records (`all_cells_ok=True`, `all_event_fibers_covered=True`) |
+| Verifier/checker run output | `code/_archival_run.txt` | 1 | captured stdout of all 7 pass scripts (this run) |
 | Dependency lock | `code/requirements_lock.txt` | 1 | exact package versions |
 | Code README | `code/README.md` | 1 | per-script index |
-| Integrity manifest | `sha256_manifest.txt` | 1 | SHA-256 of every archived file (this file excluded) |
+| Integrity manifest | `sha256_manifest.txt` | 1 | SHA-256 of every archived file (standard `HASH  path` form; this file excluded) |
 | This document | `ARCHIVAL.md` | 1 | this file |
 
-**Excluded (regenerable or out of scope):** `__pycache__`, `*.pickle`, browser-act/ChatGPT driver scripts (`_paste*.js`, `_send*.js`, …) and session logs/screenshots, exploration `*_out.txt`/`*_fb.txt` logs (superseded by `_archival_run.txt`), `_hc_cover_refined.json` (duplicate of `_hc_cover.json`), and the unrelated number-theory-falsification scripts (`a295196_*`, `agrawal_*`, `classify_*`, `classical_shapiro_check.py`). The `.tex`/`.pdf` in `paper/` are excluded as stale; regenerate from `n57_paper.md` before final submission.
+**The seven load-bearing reproducible scripts** (the ones captured in `_archival_run.txt`, §3): five exact SymPy — `verify_ny_spectral.py`, `verify_hc_closedform.py`, `verify_s1_elimination.py`, `verify_hb_exact_backsub.py` (non-load-bearing forward record), `n7_s1_hc_completeness_exact.py` (exact-algebraic exhaustiveness) — and two independent interval backends — `n7_s1_hc_cover_checker.py` (mpmath.iv), `n7_s1_hc_arb_checker.py` (Arb/python-flint).
+
+**Excluded (regenerable or out of scope):** `__pycache__`/`*.pyc`; `*.pickle` (regenerable; see the dependency note below); browser-act/ChatGPT driver scripts (`_paste*.js`, `_send*.js`, `_poll*.sh`, …) and session logs/screenshots; exploration `*_out.txt`/`*_fb.txt`/`_gpt_msg*.txt`/`_gpt_verdict.txt` logs (superseded by `_archival_run.txt`; `_gpt_verdict.txt` is deleted from the formal artifact); `_hc_cover_refined.json` (duplicate of `_hc_cover.json`); and the unrelated number-theory-falsification scripts (`a295196_*`, `agrewal_*`, `classify_*`, `classical_shapiro_check.py`). The intermediate `paper/n57_paper.tex` is regenerable from `n57_paper.md` via `code/md2tex.py` and is not load-bearing.
+
+**Dependency note (`_hc_critical_z.pickle`).** The superseded float-based `n7_s1_hc_completeness.py` reads `code/_hc_critical_z.pickle` (regenerable by `n7_s1_hc_critical_events.py`). The **load-bearing** `n7_s1_hc_completeness_exact.py` is self-contained: it recomputes the critical $z$-events itself as exact `CRootOf` algebraic numbers and does **not** read the pickle. The pickle is therefore excluded from the manifest as a regenerable intermediate.
 
 ---
 
 ## 2. Integrity (SHA-256)
 
-`sha256_manifest.txt` lists `sha256  path  (bytes)` for all 162 archived files. Key entries:
+`sha256_manifest.txt` lists every archived file in the **standard `HASH  path` form** (two-space separator, no byte suffix), so `sha256sum -c sha256_manifest.txt` passes verbatim on a fresh extract. It covers 168 files (it does not list itself, by the no-self-reference convention). Key entries:
 
 ```
-53a518fe099591a43a7da2ecc31e130ad61a6c0eebb9833f3a51ed8192d054bd  paper/n57_paper.md            (63243 bytes)
-d84ba16037baa621c5da01bbc54c418dda08c9324707795efb26b236089f4541  code/_hc_cover.json           (1237848 bytes)
-cc504b280272e8b68d2a8fa79a29e1a64f1b3a6e7625b20962bf607e08b4146e  code/_hc_completeness.json    (3230 bytes)
-001bfb29e9611bc2c2eac7fd9db318bbc7aad3bdcbdf42f075d75bfdd0de6e80  code/requirements_lock.txt    (709 bytes)
-d719d65ad3b1f4eeb489f9ae89857f8fc977cda05de90869c7f646458a9f7276  code/_archival_run.txt        (2394 bytes)
-4ea6bb42524b5686e732309e2c03b6722618da3f5ceeaeeb21b1154baf38f271  code/README.md                (3811 bytes)
-09c944f621f26df4f0bed5323e4370241a437df5cb56d119e540d2a784225913  .gitignore                    (1257 bytes)
+0ccfceb0579d00ce10f55e9388323b1d3986c704f02ef1d83c0fae99f71fa60d  .gitignore
+a625ca4f027d7c53fcd991b70ad582cb680781681dd90c64187acd5e015984c0  paper/n57_paper.md
+d6ac7c1321174fc354185e9605ec7e0bf128368990e0dc57ab525550bae77ed6  paper/n57_paper.pdf
+d84ba16037baa621c5da01bbc54c418dda08c9324707795efb26b236089f4541  code/_hc_cover.json
+28ddb36ca820d2e114224a973340664543c224cdc0d3bd3ef07f7b749588d56b  code/_hc_completeness_exact.json
+292eb09fee4c93cbec9c2422982892d7934d06710d31d07ad342b6d379637bad  code/n7_s1_hc_completeness_exact.py
+ed1e20b2d0a943b38ab21964453b08ffb3ddc6a02f1331a4cc16339f4b3adbe5  code/verify_hb_exact_backsub.py
+5f8cefaf9a140dc5ce5bd47b1b6e7ee5b1753bc27bc1c88724abfecf133b58ad  code/_archival_run.txt
+001bfb29e9611bc2c2eac7fd9db318bbc7aad3bdcbdf42f075d75bfdd0de6e80  code/requirements_lock.txt
+4ea6bb42524b5686e732309e2c03b6722618da3f5ceeaeeb21b1154baf38f271  code/README.md
 ```
 
-Verify on any checkout: `sha256sum -c sha256_manifest.txt` (the manifest does not include itself or `ARCHIVAL.md`, by the standard no-self-reference convention).
+Verify on any checkout: `sha256sum -c sha256_manifest.txt` → `168 OK, 0 FAILED`.
 
 ---
 
-## 3. Reproduce (5 scripts, all pass)
+## 3. Reproduce (7 scripts, all pass)
 
 Environment: Python 3.13.9, Windows 11. `pip install -r code/requirements_lock.txt`. Run from the **repository root**:
 
 ```bash
-python code/verify_ny_spectral.py            # EXACT: Lemma 2.2 N-Y spectral bridge (μ_k identity, disk equiv, Δ_n<0)
-python code/verify_hc_closedform.py          # EXACT: P = C + 2√(AB)  (Issue 6)
-python code/verify_s1_elimination.py         # EXACT: Res_v(F1,F2) = w²z²(w-1)² H_B H_C  (Issue 7)
-python code/n7_s1_hc_cover_checker.py        # INTERVAL (mpmath.iv): 2604/2604 pieces, P_MV > L_C = 141/20
-python code/n7_s1_hc_arb_checker.py          # INTERVAL (independent Arb/python-flint): 2604/2604, global min 7.050005 > 7
+python code/verify_ny_spectral.py            # EXACT: Lemma 2.2 N-Y spectral bridge (mu_k identity, disk equiv, Delta_n<0)
+python code/verify_hc_closedform.py          # EXACT: P = C + 2sqrt(AB)  (Issue 6)
+python code/verify_s1_elimination.py         # EXACT: Res_v(F1,F2) = w^2 z^2 (w-1)^2 H_B H_C  (Issue 7; load-bearing forward containment)
+python code/verify_hb_exact_backsub.py       # EXACT (non-load-bearing record): H_B | Res_v(F1,F2) (sp.div rem 0); F_1 does NOT divide L_w (honest)
+python code/n7_s1_hc_completeness_exact.py   # EXACT: algebraic EXHAUSTIVENESS cert (CRootOf events, bijective lift<->box, 5 event fibers)
+python code/n7_s1_hc_cover_checker.py        # INTERVAL (mpmath.iv): 2604/2604 pieces, P_MV > L_C = 141/20  (box VALIDITY)
+python code/n7_s1_hc_arb_checker.py          # INTERVAL (independent Arb/python-flint): 2604/2604, global min 7.050005023 > 7  (box VALIDITY)
 ```
 
-Expected: each prints `DONE-*` and (for the checkers) `ALL PIECES ... VERIFIED ... : True`. The captured output of one full run is in `code/_archival_run.txt`.
+Expected: each prints `DONE-*` and (for the checkers) `ALL PIECES ... VERIFIED ... : True`; the exact-completeness script prints `DONE-COMPLETENESS-EXACT all_cells_ok=True event_fibers_ok=True`. The captured output of one full run is in `code/_archival_run.txt`.
 
-The three `EXACT` scripts use only SymPy rational algebra (no floating point in any load-bearing step); the two interval scripts use outward-rounded `mpmath.iv` and an independent hand-written Arb interval layer respectively, and agree on 2604/2604 pieces.
+The five `EXACT` scripts use only SymPy rational algebra / exact `CRootOf` algebraic numbers (no floating point in any load-bearing step); the two interval scripts use outward-rounded `mpmath.iv` and an independent hand-written Arb interval layer respectively, and agree on 2604/2604 pieces. The two interval checkers certify box **validity**; `n7_s1_hc_completeness_exact.py` certifies the orthogonal **exhaustiveness** property (every admissible lift is enumerated by a box) by exact algebra — together they close both halves of the $H_C$ cover argument.
 
 ---
 
@@ -66,8 +76,8 @@ The three `EXACT` scripts use only SymPy rational algebra (no floating point in 
 
 This is a self-contained local git repository (independent of any parent repo). The proof artifacts are committed in a single snapshot whose SHA-256 manifest is §2.
 
-- **Proof-artifact commit:** `703fcb547be4c878cd086f86084551558e9d2a38` (short `703fcb5`) — contains every file listed in §1 and hashed in `sha256_manifest.txt`.
-- **Authoritative hash on any checkout:** `git rev-parse HEAD` (the doc-pointer commit on top of `703fcb5` only updates this file's hash field; the proof artifacts are unchanged, so `sha256_manifest.txt` is identical).
+- **Authoritative integrity check:** `sha256sum -c sha256_manifest.txt` (§2) — self-contained, works on **any** extract, including the bare zip (no git required). This is the primary integrity check.
+- **Current commit:** `git rev-parse HEAD`. The proof-artifact zip **includes `.git`**, so `git rev-parse HEAD` works on a fresh extract and returns the artifact commit hash. (If `.git` is stripped, fall back to the SHA-256 manifest, which is self-contained.)
 - **Zenodo DOI:** `<to be minted on deposition>`
 
 ---

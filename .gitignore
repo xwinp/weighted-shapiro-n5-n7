@@ -59,14 +59,19 @@ code/agrawal_*
 code/classify_*
 code/classical_shapiro_check.py
 
-# --- paper/: keep ONLY the source of truth n57_paper.md ---
+# --- paper/: source of truth n57_paper.md + typeset deliverable n57_paper.pdf ---
+# (.tex is a regenerable intermediate, excluded)
 paper/*
 !paper/n57_paper.md
+!paper/n57_paper.pdf
 
 # --- OS / editor ---
 .DS_Store
 Thumbs.db
 *.swp
+
+# --- regenerable distribution archive (built from the tracked sources) ---
+/proof_artifact.zip
 
 # --- repo-root browser-act / orchestrator scratch (not part of the proof) ---
 /orchestrator/

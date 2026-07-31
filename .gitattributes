@@ -1,0 +1,4 @@
+# Preserve exact bytes (no EOL conversion) so that `sha256sum -c sha256_manifest.txt`
+# passes on a fresh git checkout as well as on a zip extract.  With core.autocrlf=true
+# Git would otherwise rewrite LF<->CRLF on checkout and invalidate the manifest hashes.
+* -text

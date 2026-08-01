@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Exact verification of the N-Y spectral bridge cited in Lemma 2.2 (NY-2).
+"""Exact verification of the N-Y spectral bridge cited in Lemma 2.3 (NY-2).
 
 Checks (all exact SymPy, no floats):
   (A) The Hessian eigenvalue identity

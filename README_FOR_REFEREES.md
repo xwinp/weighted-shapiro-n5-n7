@@ -33,7 +33,7 @@ The full chain runs in a few minutes on a laptop; the slowest script
 
 | Script | Certificate |
 |---|---|
-| `verify_ny_spectral.py` | Nowosad–Yamagami spectral bridge (Lemma 2.2): `μ_k` identity, disk equivalence, `Δ_5, Δ_7 < 0` ⇒ all `μ_k > 0` |
+| `verify_ny_spectral.py` | Nowosad–Yamagami spectral bridge (Lemma 2.3): `μ_k` identity, disk equivalence, `Δ_5, Δ_7 < 0` ⇒ all `μ_k > 0` |
 | `verify_hc_closedform.py` | exact identity `P = C + 2√(AB)` (numerator ≡ 0) |
 | `verify_s1_elimination.py` | exact forward containment `Res_v(F_1,F_2) = w²z²(w−1)² H_B H_C` (no third component) |
 | `verify_s1_hc_superset.py` | **exact `H_C` containment** (load-bearing): `g(w,z)³·E_2^u(r) = z⁴(w−1)²(z−1)²·B·A·H_C`, `Res_w(g,H_C)=−z¹¹(z−1)⁶` ⇒ `g≠0` ⇒ `H_C=0 ⇒ E_2^red=0` |

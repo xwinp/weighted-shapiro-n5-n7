@@ -1,6 +1,6 @@
 # Exact holding region of the Tuan–Thuong weighted Shapiro cyclic inequality for $n=5$ and $n=7$
 
-**Weipeng Xue** — Sun Yat-sen University — xuewp5@mail2.sysu.edu.cn
+**Weipeng Xue** — Sun Yat-sen University — xuewp5@mail2.sysu.edu.cn — Huari Ge 21B, Xiangmi Lake No. 1, Xiangmei Road, Futian District, Shenzhen, Guangdong, P. R. China
 
 **Keywords:** Shapiro cyclic inequality; weighted cyclic inequality; holding region; resultant; Sturm sequence.
 

@@ -17,9 +17,9 @@ with computer-assisted exact verification.
 The principal results include computer-assisted components. The complete proof
 artifact, including all exact symbolic certificates, rigorous
 interval-arithmetic checkers, machine-readable covering data, and reproduction
-instructions, is available at [Zenodo DOI, to be inserted upon deposition] and
-at the GitHub release `v1.0-submission`
-(https://github.com/xwinp/weighted-shapiro-n5-n7). The artifact is archived
+instructions, is available at Zenodo (DOI `10.5281/zenodo.21739609`,
+https://doi.org/10.5281/zenodo.21739609) and at the GitHub release
+`v1.0-submission` (https://github.com/xwinp/weighted-shapiro-n5-n7). The artifact is archived
 with a SHA-256 manifest and a self-contained git history; the submission
 package additionally contains a referee-oriented supplement
 (`README_FOR_REFEREES.md`) listing a one-command verification

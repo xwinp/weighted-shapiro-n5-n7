@@ -43,9 +43,9 @@ Machine records:
 
 To resolve the "7 vs 38" appearance (the paper highlights 7 load-bearing scripts while `code/` contains many more), every script is classified into one of three tiers. **Tier 1** is the load-bearing core above; **Tier 2** are the remaining formal theorem certificates (also exact-rational or rigorous-interval, also must-pass, but certifying theorem pieces outside the H_C cover core); **Tier 3** are diagnostics / corroboration / exploration (never load-bearing — a timeout or display quirk in Tier 3 affects no theorem). `code/run_all_certificates.py` runs every Tier 1 + Tier 2 *certificate* script and asserts a zero exit code for each.
 
-### Tier 1 — load-bearing core (7; the chain above)
+### Tier 1 — load-bearing core (8; the chain above)
 
-`verify_ny_spectral.py`, `verify_hc_closedform.py`, `verify_s1_elimination.py`, `n7_s1_hc_s1collar.py`, `n7_s1_hc_exhaustiveness_cert.py`, `n7_s1_hc_cover_checker.py`, `n7_s1_hc_arb_checker.py`.
+`verify_ny_spectral.py`, `verify_hc_closedform.py`, `verify_s1_elimination.py`, `verify_s1_hc_superset.py`, `n7_s1_hc_s1collar.py`, `n7_s1_hc_exhaustiveness_cert.py`, `n7_s1_hc_cover_checker.py`, `n7_s1_hc_arb_checker.py`.
 
 ### Tier 2 — formal theorem certificates (must also pass)
 

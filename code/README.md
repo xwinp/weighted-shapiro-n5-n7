@@ -2,19 +2,20 @@
 
 Scripts are classified into **three tiers** (authoritative list in `ARCHIVAL.md` → "Script tiering"):
 
-- **Tier 1 — load-bearing core (7):** the computational core whose independent re-verification is the focus of the archival manifest. Must pass.
+- **Tier 1 — load-bearing core (8):** the computational core whose independent re-verification is the focus of the archival manifest. Must pass.
 - **Tier 2 — formal theorem certificates:** exact-rational or rigorous-interval scripts certifying theorem pieces outside the Tier 1 core (n=5, n=7 S₂/S₃/S₀, and the n=7 S₁ crossing/band/sign/monotonicity pieces). Must also pass.
 - **Tier 3 — diagnostic / corroboration / exploratory:** numerical cross-checks, corroboration-only scripts, superseded cross-checks, traces, scans, and companion-paper / scratch code. *Not* load-bearing — a timeout or display quirk in Tier 3 affects no theorem.
 
 `code/run_all_certificates.py` runs every Tier 1 + Tier 2 *certificate* script and asserts a zero exit code for each. The captured verification log is `code/_archival_run.txt`; repository-wide hashes are in `sha256_manifest.txt`.
 
-## Tier 1 — load-bearing core (7)
+## Tier 1 — load-bearing core (8)
 
 | Script | Certificate |
 |---|---|
 | `verify_ny_spectral.py` | exact N–Y spectral bridge (Lemma 2.2): μ_k identity, disk equivalence, Δ₅,Δ₇<0 ⇒ all μ_k>0 |
 | `verify_hc_closedform.py` | exact identity P = C + 2√(AB) (numerator ≡0; squared check) |
 | `verify_s1_elimination.py` | exact forward containment Res_v(F1,F2) = w²z²(w−1)²H_B H_C (no third component) |
+| `verify_s1_hc_superset.py` | exact H_C containment: g³·E₂^u(r)=z⁴(w−1)²(z−1)²·B·A·H_C, Res_w(g,H_C)=−z¹¹(z−1)⁶ ⇒ H_C=0 ⇒ E₂^red=0 |
 | `n7_s1_hc_s1collar.py` | 60 full-parameter interval-Newton boxes tiling [s_max,1], regular δ=0 tail |
 | `n7_s1_hc_exhaustiveness_cert.py` | 2×2-Krawczyk branch graph (2 components), six-cell bijection, certified critical fibers |
 | `n7_s1_hc_cover_checker.py` | mpmath re-check: 2604/2604 boxes, Krawczyk/admissibility/P_mv>141/20 |
@@ -62,6 +63,7 @@ or individually (Tier 1 core):
 python code/verify_ny_spectral.py
 python code/verify_hc_closedform.py
 python code/verify_s1_elimination.py
+python code/verify_s1_hc_superset.py
 python code/n7_s1_hc_s1collar.py
 python code/n7_s1_hc_exhaustiveness_cert.py
 python code/n7_s1_hc_cover_checker.py

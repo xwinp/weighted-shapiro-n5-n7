@@ -263,11 +263,10 @@ preamble = r"""\documentclass[11pt,a4paper]{article}
 \sloppy
 \emergencystretch=4em
 """
-# author line is lines[2] -> **薛炜鹏 (Weipeng Xue)** — 中山大学 ... ; conv_inline converts **..**
+# author line is lines[2] -> **Weipeng Xue** — Sun Yat-sen University — xuewp5@mail2.sysu.edu.cn
+# conv_inline converts **..** ; split on " — " so name / affiliation / email each go on its own line
 auth_tex = conv_inline(lines[2].rstrip("\n"))
-# break the author block after the name (name on line 1, affiliation + email on
-# line 2) so the bold name + long affiliation line does not overflow the title block
-auth_tex = auth_tex.replace(" — ", r" \\ ", 1)
+auth_tex = auth_tex.replace(" — ", r" \\ ")
 preamble = preamble.replace("TITLE", title_tex.replace("{",r"\{").replace("}",r"\}"))
 preamble = preamble.replace("AUTH", auth_tex)
 

@@ -1,6 +1,6 @@
 # Archival manifest - Tuan-Thuong weighted Shapiro cyclic inequality, n=5 and n=7
 
-**Author:** Weipeng Xue (薛炜鹏), Sun Yat-sen University, xuewp5@mail2.sysu.edu.cn  
+**Author:** Weipeng Xue, Sun Yat-sen University, xuewp5@mail2.sysu.edu.cn  
 **Paper source:** `paper/n57_paper.md`  
 **Typeset paper:** `paper/n57_paper.pdf` (18 pages)
 

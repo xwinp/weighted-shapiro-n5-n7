@@ -53,8 +53,8 @@ git checkout v1.0-submission
 ```
 
 The complete archive (including the packed `.git` history) is deposited on
-Zenodo (DOI recorded in `SUPPLEMENT.md` / `ARCHIVAL.md` upon deposition); the
-archived artifact is the authoritative version associated with the manuscript.
+Zenodo (DOI `10.5281/zenodo.21739609`, https://doi.org/10.5281/zenodo.21739609);
+the archived artifact is the authoritative version associated with the manuscript.
 
 ## Arithmetic backends
 

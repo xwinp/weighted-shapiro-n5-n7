@@ -91,4 +91,4 @@ python code/n7_s1_hc_cover_checker.py
 python code/n7_s1_hc_arb_checker.py
 ```
 
-Every load-bearing artifact is committed to a self-contained git repository with a standard SHA-256 manifest (`sha256_manifest.txt`); on a fresh extraction `sha256sum -c sha256_manifest.txt` verifies all files. The repository snapshot is identified by `git rev-parse HEAD`; a Zenodo DOI will be added upon deposition. The authoritative script role map (load-bearing core vs. formal certificates vs. diagnostics) is in `code/README.md`.
+Every load-bearing artifact is committed to a self-contained git repository with a standard SHA-256 manifest (`sha256_manifest.txt`); on a fresh extraction `sha256sum -c sha256_manifest.txt` verifies all files. The repository snapshot is identified by `git rev-parse HEAD`; the archive is deposited at Zenodo (DOI `10.5281/zenodo.21739609`, https://doi.org/10.5281/zenodo.21739609). The authoritative script role map (load-bearing core vs. formal certificates vs. diagnostics) is in `code/README.md`.

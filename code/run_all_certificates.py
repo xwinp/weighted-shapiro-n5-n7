@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Run every Tier 1 + Tier 2 *certificate* script and assert a zero exit code.
 
-Tier 1 (load-bearing core, 7) and Tier 2 (formal theorem certificates) are the
+Tier 1 (load-bearing core, 8) and Tier 2 (formal theorem certificates) are the
 scripts whose pass/fail determines the theorems; Tier 3 (diagnostic /
 corroboration / exploratory) is intentionally excluded.  See ARCHIVAL.md ->
 "Script tiering" for the authoritative 3-tier list.
@@ -29,6 +29,7 @@ CERTIFICATES = [
     (1, "verify_ny_spectral.py"),
     (1, "verify_hc_closedform.py"),
     (1, "verify_s1_elimination.py"),
+    (1, "verify_s1_hc_superset.py"),
     (1, "n7_s1_hc_s1collar.py"),
     (1, "n7_s1_hc_exhaustiveness_cert.py"),
     (1, "n7_s1_hc_cover_checker.py"),

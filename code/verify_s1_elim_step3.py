@@ -3,12 +3,17 @@
 """Stepwise resultant elimination for S1 KKT  (Issue 7, step 3: v-elim -> H_B*H_C)."""
 import sympy as sp
 v,w,z,rho = sp.symbols('v w z rho', positive=True)
-# F1 = E2_red (the v-relation after u-elim), F2,F3 the other two v-relations (from step2)
+# F1, F2, F3 = the three rho-free v-relations after u-elim (from step2).
+# DIAGNOSTIC: F1 is NOT a scalar multiple of E2u_num/E2_red (the print below is False).
+# The correct F1 <-> E2_red relation on H_C=0 is certified EXACTLY in
+# verify_s1_hc_superset.py via the linear subresultant identity
+#   sigma1^3 * E2u_num(r) = z (w-1)^2 (z-1)^2 B A H_C,   r = -sigma0/sigma1,
+# which proves the KKT v-root satisfies E2_red = 0 on the H_C branch.
 F1 = v**2*w + v*w**3 - v*w**2 + v*w*z - v*w - v*z + v - w**3 + 2*w**2 - w
 F2 = v**2*w*z + v*w*z**3 - v*w*z**2 - v*w*z + v*w - v*z**3 + v*z**2 + w**2*z - w*z
 F3 = -v*w**3*z + v*w**2*z + v*w*z**3 - 2*v*w*z**2 + v*w - v*z**3 + 2*v*z**2 - v*z + w**3*z - w**2*z
 
-# Cross-check F1 == E2u_num from n7_s1_hc_kkt_check.py (up to a prefactor):
+# Diagnostic cross-check F1 == E2u_num (expected False; resolution in verify_s1_hc_superset.py):
 uS,vS,wS,zS=sp.symbols('u v w z')
 a3=1-vS+uS*vS; a5=1-zS+zS*wS-zS*vS*wS+zS*uS*vS*wS
 E2=uS*(1-zS)-zS*a5*(1-vS)

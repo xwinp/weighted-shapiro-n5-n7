@@ -1,24 +1,27 @@
-### Archival run - 7 Tier-1 load-bearing + 14 Tier-2 formal certificates (rev 8)
-### rev 8: NO math changes. All theorem logic identical to rev 4-7.
-###        Script-hardening + paper/README/ARCHIVAL consistency only:
-###  (1) Formal-assert sweep: every Tier 1+2 certificate script now ends with
-###      assert <invariants> + sys.exit(0 if ok else 1), so pass/fail is
-###      machine-decisive. run_all_certificates.py asserts exit 0 for each.
-###  (2) n7_resultant.py: exact quotient Res_t(R,B)=p^15(p-1)^6 F certified by
-###      exact polynomial division (remainder 0); F squarefree; F mod 23
-###      irreducible (=> irreducible over Q, Gauss); Sturm 2 (0,1)-roots.
-###  (3) verify_endpoints.py added (Tier 2): a7,b7 (11 dig), p1,p2 (9 dig),
-###      each within 0.5 ulp via exact Sturm; {p1,p2} subset (a7,b7).
-###  (4) Cross-platform stdout: run_all_certificates.py sets PYTHONUTF8=1 for
-###      children; n7_inactive_sturm.py non-ASCII superset glyph -> ASCII.
-###  (5) Paper sec 4.2 + README + ARCHIVAL updated for (2),(3); 3-tier list
-###      authoritative in ARCHIVAL.md -> 'Script tiering'.
+### Archival run - 8 Tier-1 load-bearing + 14 Tier-2 formal certificates (rev 12)
+### rev 12: NO theorem statement / numerical-invariant change. All invariants
+###        identical to rev 4-11 (collar gmin=7.344054>L_C, exhaustiveness
+###        components=2/cells=6/fibers=5/edges=2823, Arb 2604/2604, min 7.050005>141/20).
+###        Closes GPT's 3 pre-submission must-fix proof gaps (rigorizing existing claims):
+###  (1) Lemma 2.3 boundary inheritance: bidirectional inf (lsc upper + definition lower
+###      + approximation converse -> equality), replacing the one-sided lsc attribution.
+###  (2) S3 positive KKT point uniqueness: sequential linear-fractional elimination ->
+###      -(b-r^2)(r+1)(quartic)(r^4-r^3+r^2-r+1)=0, all factors positive for b,r>0 except
+###      b-r^2.  Added as verify_s3_closed.py section 5 (exact zero-polynomial checks).
+###  (3) H_C containment (load-bearing): replaces the FALSE "F1 is E2_red up to a
+###      prefactor" claim with an exact subresultant identity
+###      sigma1^3 * E2^u(r) = z(w-1)^2(z-1)^2 B A H_C (rem 0), sigma1=w*g,
+###      Res_w(g,H_C)=-z^11(z-1)^6 (vanishes only at inadmissible z=0,1) -> sigma1!=0
+###      -> E2^u(r)=0 -> E2_red=0.  New Tier-1 verifier verify_s1_hc_superset.py.
+###      Also: HB endpoint limits (rho->0 @z->0+, ->+inf @z->1-); "state"->"positive
+###      linear functional"; "moving into full cone"->"one-sided KKT stability".
 ### Generators read-only by default; committed JSONs canonical LF.
 ### host: Windows-11-10.0.26200-SP0  python: Python 3.13.9  (python-flint==0.9.0 for Arb)
-### date: 2026-07-31
+### date: 2026-08-01
+
 
 ================================================================
-### python code/verify_ny_spectral.py
+### python code/verify_ny_spectral.py   (Tier 1)
 ================================================================
 (A) mu_NY == mu_paper: True
 (B) |lambda-1/2|^2 - 1/4 == mu/2: True
@@ -31,7 +34,7 @@ DONE-NY-SPECTRAL
 [exit 0]
 
 ================================================================
-### python code/verify_hc_closedform.py
+### python code/verify_hc_closedform.py   (Tier 1)
 ================================================================
 P == C + A/r1 + B*r1  (rational identity): TRUE (numerator identically zero)
 g_1 == r1*(B - A/r1^2): TRUE (numerator identically zero)
@@ -48,7 +51,7 @@ DONE-HC-CLOSEDFORM
 [exit 0]
 
 ================================================================
-### python code/verify_s1_elimination.py
+### python code/verify_s1_elimination.py   (Tier 1)
 ================================================================
 (1) E_uv factored: -rho*u*v*w**2*z**2*(rho + 1)**4*(u - 1)*(v - 1)*(u*v**2 + u*w - u - v**2 + v)
     contains E3 = u*v**2 + u*w - u - v**2 + v : True
@@ -67,7 +70,25 @@ DONE-ELIMINATION
 [exit 0]
 
 ================================================================
-### python code/n7_s1_hc_s1collar.py
+### python code/verify_s1_hc_superset.py   (Tier 1)
+================================================================
+(H_C) Res_v(F1,F2) = w^2 z^2 (w-1)^2 H_B H_C           [OK]
+(E2)  E2u_num = (v-1) * E2_red                           [OK]
+(KEY) sigma1^3 * E2u_num(r) = z (w-1)^2 (z-1)^2 B A H_C    [OK]
+      r = -sigma0/sigma1  (linear subresultant root; KKT v on H_C=0)
+(sig1) sigma1 = w*g; Res_w(g,H_C) factored: -z**11*(z - 1)**6
+       only real zeros in [0,1] are z=0, z=1 (inadmissible endpoints)
+       => sigma1 != 0 on admissible H_C branch (z in (0,1), w in (0,1))  [OK]
+
+CONTAINMENT (EXACT): on the admissible H_C branch, the KKT v-root r
+  satisfies  sigma1^3 * E2u_num(r) = ... * H_C = 0  =>  E2u_num(r) = 0;
+  admissibility (v != 1) => E2_red = 0.  Hence
+  V_KKT^adm  cap  V(H_C)  subset  V(H_C, E2_red, E3, K, g1).
+DONE-HC-SUPERSET
+[exit 0]
+
+================================================================
+### python code/n7_s1_hc_s1collar.py   (Tier 1)
 ================================================================
 Per-s-interval P-bounds (c,s-param, MV-form, ivprec=140):
   s in (0.000000,0.198062) [z=0.801938..1.000000]: pieces=1154  P_inf>=7.050002
@@ -103,13 +124,13 @@ seam: s_lo[0]==s_max (True) and s_hi[-1]==1 (True) : True
 === summary ===
 collar pieces: 60 ; sweep P_lo min=7.344054 ; re-verify P_lo min=7.344054 > L_C=7.05000
 failures(sweep): 0 ; re-verify ok: True
-elapsed 1.0s
+elapsed 2.6s
 Read-only: code/_hc_s1collar.json not rewritten (pass --write-record to update)
 DONE-S1COLLAR n=60 gmin=7.344054 gmin_re=7.344054 >L_C=True revify=True seam=True abut=True
 [exit 0]
 
 ================================================================
-### python code/n7_s1_hc_exhaustiveness_cert.py
+### python code/n7_s1_hc_exhaustiveness_cert.py   (Tier 1)
 ================================================================
 Per-s-interval P-bounds (c,s-param, MV-form, ivprec=140):
   s in (0.000000,0.198062) [z=0.801938..1.000000]: pieces=1154  P_inf>=7.050002
@@ -151,7 +172,7 @@ DONE-EXHAUSTIVENESS components=2 cells=6 fibers=5 edges=2823
 [exit 0]
 
 ================================================================
-### python code/n7_s1_hc_cover_checker.py
+### python code/n7_s1_hc_cover_checker.py   (Tier 1)
 ================================================================
 Per-s-interval P-bounds (c,s-param, MV-form, ivprec=140):
   s in (0.000000,0.198062) [z=0.801938..1.000000]: pieces=1154  P_inf>=7.050002
@@ -180,7 +201,7 @@ DONE-CHECKER
 [exit 0]
 
 ================================================================
-### python code/n7_s1_hc_arb_checker.py
+### python code/n7_s1_hc_arb_checker.py   (Tier 1)
 ================================================================
 Per-s-interval P-bounds (c,s-param, MV-form, ivprec=140):
   s in (0.000000,0.198062) [z=0.801938..1.000000]: pieces=1154  P_inf>=7.050002
@@ -212,7 +233,7 @@ DONE-ARBCHECKER
 [exit 0]
 
 ================================================================
-### python code/n5_s1_certificate.py
+### python code/n5_s1_certificate.py   (Tier 2)
 ================================================================
 P (branch) = a**3/r**3 - 2/r**2 + 3/a + 1/(a**3*r)
 M = (r+1)P-5 = (-5*a**3*r**3 + (r + 1)*(a**6 - 2*a**3*r + 3*a**2*r**3 + r**2))/(a**3*r**3)
@@ -248,7 +269,7 @@ DONE-N5-S1-CERT
 [exit 0]
 
 ================================================================
-### python code/n5_s1_m1_interval.py
+### python code/n5_s1_m1_interval.py   (Tier 2)
 ================================================================
 positive roots of a^6-a^2-1: [11509639252577580357/10000000000000000000] approx [1.150963925257758]
 f(1.150)= -604111/64000000  f(1.151)= 354174281094401/1000000000000000000
@@ -263,7 +284,7 @@ DONE-M1-CERT certified=True
 [exit 0]
 
 ================================================================
-### python code/n7_resultant.py
+### python code/n7_resultant.py   (Tier 2)
 ================================================================
 nsolve a_7 branch: p=0.2142735209098409655877423190900183879775
   a,b,c,d,e = 0.167620792643,0.230635915782,0.0597816935025,0.312933033933,0.22902856414
@@ -293,7 +314,7 @@ DONE-RESULTANT
 [exit 0]
 
 ================================================================
-### python code/verify_endpoints.py
+### python code/verify_endpoints.py   (Tier 2)
 ================================================================
 === Endpoint decimal-confirmation certificate ===
 
@@ -316,7 +337,7 @@ DONE-ENDPOINTS
 [exit 0]
 
 ================================================================
-### python code/n7_s2_rational_signs.py
+### python code/n7_s2_rational_signs.py   (Tier 2)
 ================================================================
 p=1/5<a7 (expect P>7, B>0)                 t~1.39885 in[1.39883,1.39887]  B in[30116709200321381334555841/31250000000000000000000000000,34746273526146252534263041/31250000000000000000000000000] -> sign +
 p=1/4 in (a7,b7) (expect P<7, B<0)         t~1.29268 in[1.29266,1.29270]  B in[-170398618635119584219204477/80000000000000000000000000000,-159030250817069792431615677/80000000000000000000000000000] -> sign -
@@ -329,7 +350,7 @@ DONE-S2-SIGNS
 [exit 0]
 
 ================================================================
-### python code/n7_inactive_sturm.py
+### python code/n7_inactive_sturm.py   (Tier 2)
 ================================================================
 deg_t R = 8 deg_t D0n = 5 deg_t D5n = 6
 Computing G0 = Res_t(R, D0n) ...
@@ -357,7 +378,7 @@ DONE-INACTIVE-STURM
 [exit 0]
 
 ================================================================
-### python code/verify_s3_closed.py
+### python code/verify_s3_closed.py   (Tier 2)
 ================================================================
 -- KKT: gradients on the support vanish at the closed form --
   dP/db = 0   (zero: True)
@@ -383,11 +404,21 @@ EXACT chain holds => H(r)>0 => P_S3^stat - 8 = (1-r)H(r)/r^2 > 0 : True
    => for p in (a7,b7): p<1/2 => r>1 => d=r(1-r^7)<0 => no positive S3 stat pt;
       inf_S3 P attained on dS3 subset S4 where P>7 (Sec 4.1).  S3 never fails.
 
-ALL CHECKS PASS (KKT + closed form + exact H(r) chain + band): True
+-- UNIQUENESS of the positive S3 KKT point --
+  gb = 1/(qc)-1/(pb^2), strictly decreasing in c (unique c) : True
+  gb=0 -> c=b^2/r^5                                          : True
+  gc=0 & gd=0 -> UNIQUE (e,d)=(b^4/r^5, b^3(1-br^5)/r^5)    : True
+  ge=0 -> -(b-r^2)(r+1)(quartic)(r^4-r^3+r^2-r+1) [exact]   : True
+  b^5-r^10 = (b-r^2)*quartic                                 : True
+  quartic coeffs all positive (=> >0 for b,r>0)             : True
+  (r+1)(r^4-r^3+r^2-r+1) = r^5+1 > 0                        : True
+  => b=r^2 is the UNIQUE positive root; c=r^-1, e=r^3, d=r(1-r^7) unique.
+
+ALL CHECKS PASS (KKT + closed form + exact H(r) chain + band + UNIQUENESS): True
 [exit 0]
 
 ================================================================
-### python code/verify_uniform_hess.py
+### python code/verify_uniform_hess.py   (Tier 2)
 ================================================================
 Uniform reduced Hessian on sum=0: generalised eigenproblem B^T H B v = lam (B^T B) v
   p=0.25: gen-eig =[0.08952 0.08952 1.73965 1.73965 2.54582 2.54582]
@@ -407,7 +438,7 @@ SPECTRUM MATCH: True
 [exit 0]
 
 ================================================================
-### python code/n7_s1_crossing_resultant.py
+### python code/n7_s1_crossing_resultant.py   (Tier 2)
 ================================================================
 ======================================================================
 (A) Numerical verification of H_B, closure, P-formula
@@ -476,7 +507,7 @@ DONE-CROSSING-RESULTANT
 [exit 0]
 
 ================================================================
-### python code/_verify_crossings_in_band.py
+### python code/_verify_crossings_in_band.py   (Tier 2)
 ================================================================
 Isolating a7, b7 (roots of F in (0,1))...
   F roots in (0,1/4): 1
@@ -510,7 +541,7 @@ DONE-CROSSINGS-IN-BAND
 [exit 0]
 
 ================================================================
-### python code/_verify_s1_three_samples.py
+### python code/_verify_s1_three_samples.py   (Tier 2)
 ================================================================
 Rigorous three-sample H_B sign certificate (GPT way B)
 ================================================================
@@ -529,7 +560,7 @@ DONE-THREE-SAMPLES
 [exit 0]
 
 ================================================================
-### python code/n7_s1_rho_monotone_Lcert.py
+### python code/n7_s1_rho_monotone_Lcert.py   (Tier 2)
 ================================================================
 (A) K'/K - (GPT rhs) simplified = 0   => identity holds: True
 (B) Res_w(H_B,L) = 8*z**9 - 32*z**8 + 44*z**7 - 29*z**6 + 39*z**5 - 45*z**4 + 15*z**3 - 6*z**2 + 6*z
@@ -555,7 +586,7 @@ DONE-RHO-MONO-LCERT
 [exit 0]
 
 ================================================================
-### python code/n7_s1_rigorous_certs.py
+### python code/n7_s1_rigorous_certs.py   (Tier 2)
 ================================================================
 ============================================================
 (a) P_{S1}^stat(2/5) > 7  (rigorous interval)
@@ -597,7 +628,7 @@ DONE-RIGOROUS-CERTS
 [exit 0]
 
 ================================================================
-### python code/n7_s1_hc_kkt_check.py
+### python code/n7_s1_hc_kkt_check.py   (Tier 2)
 ================================================================
 z      p       branch    g1        g2        g3        g4        g5       Pval
 0.50  0.64695 spurious  -3.6e-08 -2.4e-08 -1.9e-08 -7.2e-02 -5.9e-02  7.94824
@@ -617,4 +648,4 @@ CERTIFICATE: every REAL H_C-lift stationary point has P>7=True AND every spuriou
 DONE-KKT
 [exit 0]
 
-### end of rev-8 archival run
+### end of rev-12 archival run (22/22 [exit 0])

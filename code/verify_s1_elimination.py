@@ -18,7 +18,11 @@ Elimination chain (all exact, resultants / linear elimination):
       (the u-relation; prefactor = -rho u v w^2 z^2 (rho+1)^4 (u-1)(v-1), an admissibility boundary).
       Solve E3=0 for u:  u = v(1-v)/((1-w)-v^2).
   (2) eliminate rho_1 from L_u,L_w / L_u,L_z / L_w,L_z, then substitute u -> the v-relations
-      F1, F2, F3 (all p-free, i.e. rho-free).  (F1 is the E2_red v-relation up to a prefactor.)
+      F1, F2, F3 (all p-free, i.e. rho-free).  NOTE: F1 is NOT a scalar multiple of E2_red
+      (F1 == E2u_num is False; see verify_s1_elim_step3.py).  The correct relation is certified
+      in verify_s1_hc_superset.py: on H_C=0 the KKT v-root (common root of F1,F2, given by their
+      linear subresultant) satisfies the EXACT identity sigma1^3 * E2u_num(r) = z(w-1)^2(z-1)^2 B A H_C,
+      hence E2_red=0.  This replaces the earlier incorrect "up to a prefactor" claim.
   (3) eliminate rho_1 from g_1 with u substituted -> the closure  (rho^7 = K(u,v,w,z)).
   (4) eliminate v:  Res_v(F1, F2) = w^2 (w-1)^2 * H_B * H_C   (EXACT identity).
       => on the admissible set (w in (0,1)) every S1 KKT solution has H_B H_C = 0,
@@ -28,8 +32,10 @@ Soundness / superset:
   - H_B back-substitution (numerical): reconstructing u (E3), v (F1), rho (closure),
     rho_1 (g_1) at H_B solutions gives g_1..g_5 ~ 1e-13 (genuine KKT points); H_B is the
     branch used throughout Sec 4.3 (monotonicity, det, crossing certs).
-  - H_C: the beta-variety {H_C, E2_red, closure, g_1} is a SUPERSET of the true H_C
-    stationary set; its spurious lifts violate g_4,g_5 (documented, n7_s1_hc_kkt_check.py).
+  - H_C: the EXACT containment V_KKT^adm cap V(H_C) subset V(H_C, E2_red, E3, K, g_1) is
+    certified in verify_s1_hc_superset.py (subresultant identity, no floats).  The beta-variety
+    {H_C, E2_red, E3, closure, g_1} is therefore a superset of the true H_C stationary set;
+    its spurious lifts violate g_4,g_5 (numerical corroboration, n7_s1_hc_kkt_check.py).
     Prop 4.3 bounds P on the whole superset, which is stronger than on the true set.
 Saturation: prefactors w, w-1, v-1, u-1, v+w-1 are beta=0/1 or (1-w)-v^2=0 (usol denom)
     boundaries, removed by localizing at the admissible set beta in (0,1)^4.

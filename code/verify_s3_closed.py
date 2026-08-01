@@ -105,6 +105,58 @@ print(f"\n-- failure band (a7,b7) lies below p=1/2: b7={float(b7):.6f} < 0.5 : {
 print("   => for p in (a7,b7): p<1/2 => r>1 => d=r(1-r^7)<0 => no positive S3 stat pt;")
 print("      inf_S3 P attained on dS3 subset S4 where P>7 (Sec 4.1).  S3 never fails.")
 
-ok = kkt_ok and form_ok and chain_ok and band_below_half
-print(f"\nALL CHECKS PASS (KKT + closed form + exact H(r) chain + band): {ok}")
+# ---- 5. UNIQUENESS of the positive KKT point (b=r^2 is the only positive root) ----
+# Sequential linear-fractional elimination (each gradient is affine in one variable):
+#   gb=0 (affine in 1/c) -> c = b^2/r^5
+#   gc=0 & gd=0          -> e = b^4/r^5,  d = b^3(1-b r^5)/r^5
+#   ge=0 under these     -> -(b^5-r^10)(r^5+1) = 0, i.e. (b-r^2)*quartic*(r^5+1)=0.
+# Recompute P and gradients with sp.together (form needed for the exact substitution).
+# Substitute p=1/(1+r^5), q=r^5/(1+r^5) so the gradients are functions of (b,c,d,e,r) only.
+P_t = sp.together(sum(x[i] / (p * x[(i + 1) % 7] + q * x[(i + 2) % 7]) for i in range(7)))
+P_t = sp.together(P_t.subs({p: 1 / (1 + r**5), q: r**5 / (1 + r**5)}))
+g_t = {v: sp.together(sp.diff(P_t, v)) for v in [b, c, d, e]}
+def num_of(expr):
+    return sp.expand(sp.together(expr).as_numer_denom()[0])
+gb_n, gc_n, gd_n, ge_n = [num_of(g_t[v]) for v in [b, c, d, e]]
+# gb = 1/(q c) - 1/(p b^2) (independent of d,e), strictly decreasing in c
+# => gb=0 has a UNIQUE positive solution c = p b^2 / q = b^2/r^5.
+p_e = 1 / (1 + r**5); q_e = r**5 / (1 + r**5)
+gb_form = sp.simplify(g_t[b] - (1 / (q_e * c) - 1 / (p_e * b**2))) == 0
+gb_decr = sp.simplify(sp.diff(g_t[b], c) + 1 / (q_e * c**2)) == 0   # dgb/dc = -1/(q c^2) < 0
+c_expr = b**2 / r**5
+e_expr = b**4 / r**5
+d_expr = b**3 * (1 - b * r**5) / r**5
+gb_zero = num_of(g_t[b].subs(c, c_expr)) == 0
+# with c = b^2/r^5, the system gc=0 & gd=0 has a UNIQUE solution (e,d) = (e_expr, d_expr)
+gc_ce = num_of(g_t[c].subs(c, c_expr)); gd_ce = num_of(g_t[d].subs(c, c_expr))
+ed_sol = sp.solve([gc_ce, gd_ce], [e, d], dict=True)
+ed_unique = (len(ed_sol) == 1 and sp.simplify(ed_sol[0][e] - e_expr) == 0
+             and sp.simplify(ed_sol[0][d] - d_expr) == 0)
+gc_zero = num_of(g_t[c].subs([(c, c_expr), (e, e_expr), (d, d_expr)])) == 0
+gd_zero = num_of(g_t[d].subs([(c, c_expr), (e, e_expr), (d, d_expr)])) == 0
+ge_num = num_of(g_t[e].subs([(c, c_expr), (e, e_expr), (d, d_expr)]))
+quartic = b**4 + b**3 * r**2 + b**2 * r**4 + b * r**6 + r**8
+cyclot = r**4 - r**3 + r**2 - r + 1          # = (r^5+1)/(r+1) > 0 for r>0
+target = sp.expand(-(-b + r**2) * (r + 1) * quartic * cyclot)
+uniq_factor = sp.expand(ge_num - target) == 0
+quartic_pos = all(co > 0 for co in sp.Poly(quartic, b, r).coeffs())
+cyclot_pos = sp.expand((r + 1) * cyclot - (r**5 + 1)) == 0  # (r+1)(r^4-...+1)=r^5+1>0
+# b^5 - r^10 == (b-r^2)*quartic  (so b=r^2 is the unique positive b^5=r^10 root)
+b5_factor = sp.expand((b - r**2) * quartic - (b**5 - r**10)) == 0
+print("\n-- UNIQUENESS of the positive S3 KKT point --")
+print(f"  gb = 1/(qc)-1/(pb^2), strictly decreasing in c (unique c) : {gb_form and gb_decr}")
+print(f"  gb=0 -> c=b^2/r^5                                          : {gb_zero}")
+print(f"  gc=0 & gd=0 -> UNIQUE (e,d)=(b^4/r^5, b^3(1-br^5)/r^5)    : {ed_unique}")
+print(f"  ge=0 -> -(b-r^2)(r+1)(quartic)(r^4-r^3+r^2-r+1) [exact]   : {uniq_factor}")
+print(f"  b^5-r^10 = (b-r^2)*quartic                                 : {b5_factor}")
+print(f"  quartic coeffs all positive (=> >0 for b,r>0)             : {quartic_pos}")
+print(f"  (r+1)(r^4-r^3+r^2-r+1) = r^5+1 > 0                        : {cyclot_pos}")
+print("  => b=r^2 is the UNIQUE positive root; c=r^-1, e=r^3, d=r(1-r^7) unique.")
+
+uniq_ok = (gb_form and gb_decr and gb_zero and ed_unique and gc_zero and gd_zero
+           and uniq_factor
+           and quartic_pos and cyclot_pos and b5_factor)
+
+ok = kkt_ok and form_ok and chain_ok and band_below_half and uniq_ok
+print(f"\nALL CHECKS PASS (KKT + closed form + exact H(r) chain + band + UNIQUENESS): {ok}")
 sys.exit(0 if ok else 1)

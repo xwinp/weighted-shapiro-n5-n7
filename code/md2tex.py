@@ -263,10 +263,29 @@ preamble = r"""\documentclass[11pt,a4paper]{article}
 \sloppy
 \emergencystretch=4em
 """
-# author line is lines[2] -> **Weipeng Xue** — Sun Yat-sen University — xuewp5@mail2.sysu.edu.cn
-# conv_inline converts **..** ; split on " — " so name / affiliation / email each go on its own line
+# author line is lines[2] -> **Weipeng Xue** — Sun Yat-sen University — xuewp5@mail2.sysu.edu.cn — <mailing address>
+# conv_inline converts **..** ; split on " — " so name / affiliation / email / address each go on its own line.
+# The address (last segment) is often long; break it at a comma into ~balanced sub-lines so the
+# centered \author block does not overflow the text width or push the shorter lines off-center.
 auth_tex = conv_inline(lines[2].rstrip("\n"))
-auth_tex = auth_tex.replace(" — ", r" \\ ")
+segs = auth_tex.split(" — ")
+if len(segs) >= 4 and len(segs[-1]) > 60:
+    addr = segs[-1]
+    parts = [p.strip() for p in addr.split(",")]
+    # greedy-pack parts into sub-lines of <= ~55 chars
+    lines_addr = []
+    cur = ""
+    for p in parts:
+        cand = (cur + ", " + p) if cur else p
+        if len(cand) <= 55 or not cur:
+            cur = cand
+        else:
+            lines_addr.append(cur)
+            cur = p
+    if cur:
+        lines_addr.append(cur)
+    segs[-1] = r" \\ ".join(lines_addr)
+auth_tex = r" \\ ".join(segs)
 preamble = preamble.replace("TITLE", title_tex.replace("{",r"\{").replace("}",r"\}"))
 preamble = preamble.replace("AUTH", auth_tex)
 

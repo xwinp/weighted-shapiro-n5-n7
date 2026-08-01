@@ -2,30 +2,17 @@
 
 **薛炜鹏 (Weipeng Xue)** — 中山大学 (Sun Yat-sen University) — xuewp5@mail2.sysu.edu.cn
 
-**Keywords:** Shapiro cyclic inequality; weighted cyclic inequality; holding region; resultant; Sturm sequence; cyclic independent set; Nowosad–Yamagami theorem.
+**Keywords:** Shapiro cyclic inequality; weighted cyclic inequality; holding region; resultant; Sturm sequence.
 
 **2020 Mathematics Subject Classification:** 26D15, 26D20, 11C08.
 
 ## Abstract
 
-Tuan and Thuong [2] introduced the weighted Shapiro cyclic inequality
-$$P_{n,p,q}(x):=\sum_{i=0}^{n-1}\frac{x_i}{p\,x_{i+1}+q\,x_{i+2}}\ge\frac{n}{p+q},\qquad x_{i+n}=x_i,\ x_i\ge0,$$
-and posed, as Open Question (b), the problem of finding — for each fixed $n$ — sufficient conditions on $(p,q)$ for the inequality to hold. Both sides scale by the same factor under $(p,q)\mapsto c(p,q)$, so we normalize $p+q=1$ (bound $n$) and study the **holding region**
-$$H_n=\{p\in(0,1):P_{n,p,1-p}(x)\ge n\ \forall\,x\ \text{admissible}\}=\{p:m_n(p)\ge n\},\quad m_n(p)=\inf_x P_{n,p,1-p}(x).$$
-where *admissible* means $x_i\ge0$ and $p\,x_{i+1}+q\,x_{i+2}>0$ for all $i$. Our result is a stronger, exact answer to that question for $n=5,7$.
-
-We determine $H_5$ and $H_7$ **completely and rigorously**:
-$$H_5=(0,1),\qquad H_7=(0,a_7]\cup[b_7,1),$$
-where $a_7,b_7$ are the two roots in $(0,1)$ of an explicit irreducible degree-$15$ integer polynomial. Numerically,
-$$a_7\approx0.21427352091\in(1/5,1/4),\qquad b_7\approx0.32862767792\in(1/4,1/3).$$
-
-In particular $H_5=(0,1)$: the inequality holds for **all** $p\in(0,1)$ at $n=5$, so the sufficient interval $[(5-\sqrt5)/10,(5+\sqrt5)/10]$ proved by Tuan–Thuong is strict, not exact. For $n=7$ the first failure band appears: $m_7(p)<7$ exactly on the open interval $(a_7,b_7)$, with $m_7(p)=\min\{7,P_{S_2}^{\rm curve}(p)\}$.
-
-Every face of the simplex (dihedral orbit of an independent set of the cycle $C_n$) is settled by exact algebraic certificates — resultant elimination, rational Sturm sequences, a positive-coefficient crossing resultant, a negative-determinant saddle certificate, and the Nowosad–Yamagami interior-uniqueness theorem — each independently reconstructed and verified by exact division (remainder zero). This gives a complete, computer-assisted answer to Open Question (b) of Tuan–Thuong for $n=5$ and $n=7$.
+Tuan and Thuong introduced the weighted Shapiro cyclic inequality $P_{n,p,q}(x)=\sum x_i/(p\,x_{i+1}+q\,x_{i+2})\ge n/(p+q)$ and asked, as Open Question (b), for the exact $(p,q)$-region where it holds. Both sides scale alike under $(p,q)\mapsto c(p,q)$, so we normalize $p+q=1$ (bound $n$) and determine the holding region $H_n=\{p\in(0,1):P_{n,p,1-p}(x)\ge n\ \forall\,x\}$ completely for $n=5$ and $n=7$. We prove $H_5=(0,1)$: the inequality holds for every $p$ at $n=5$, so the Tuan–Thuong sufficient interval is strict, not exact. For $n=7$, $H_7=(0,a_7]\cup[b_7,1)$ where $a_7,b_7$ are the two $(0,1)$-roots of an explicit irreducible degree-$15$ integer polynomial ($a_7\approx0.21427$, $b_7\approx0.32863$); failure occurs exactly on $(a_7,b_7)$. This first failure band, absent at $n=5$, proves the $n=5$ sufficient condition does not extend to $n=7$. Every face is settled by exact algebraic certificates — resultant elimination, rational Sturm sequences, a positive-coefficient crossing resultant, a negative-determinant saddle certificate, and the Nowosad–Yamagami interior-uniqueness theorem — each independently verified by exact division (remainder zero).
 
 ## 1. Introduction
 
-The classical Shapiro cyclic inequality [3] $\sum x_i/(x_{i+1}+x_{i+2})\ge n/2$ is false in general; the first counterexample is $n=20$ (Lighthill [4], 1956). The modern picture is that the inequality holds for even $4\le n\le12$ and odd $3\le n\le23$, and fails for even $n\ge14$ and odd $n\ge25$ [5]; Ando [6] gives a new proof for the even cases $4\le n\le12$ and treats $n=23$. Drinfel'd [1] determined the asymptotic constant. Tuan and Thuong [2], under the title *On an Extension of Shapiro's Cyclic Inequality*, introduced the two-parameter weighted form above, completely classified $n=4$, gave the sufficient interval $[(5-\sqrt5)/10,(5+\sqrt5)/10]$ for $n=5$, and proved failure for every even $n\ge4$ when $p<q$. The exact $(p,q)$-region for odd $n\ge5$ was left open.
+The classical Shapiro cyclic inequality [8] $\sum x_i/(x_{i+1}+x_{i+2})\ge n/2$ is false in general; the first counterexample is $n=20$ (Lighthill [5], 1956). The modern picture is that the inequality holds for even $4\le n\le12$ and odd $3\le n\le23$, and fails for even $n\ge14$ and odd $n\ge25$ [6]; Ando [1] gives a new proof for the even cases $4\le n\le12$ and treats $n=23$. Drinfel'd [3] determined the asymptotic constant. Tuan and Thuong [9], under the title *On an Extension of Shapiro's Cyclic Inequality*, introduced the two-parameter weighted form above, completely classified $n=4$, gave the sufficient interval $[(5-\sqrt5)/10,(5+\sqrt5)/10]$ for $n=5$, and proved failure for every even $n\ge4$ when $p<q$. The exact $(p,q)$-region for odd $n\ge5$ was left open.
 
 We normalize $p+q=1$ (bound $n$) and write $P_{n,p}:=P_{n,p,1-p}$. The value function $m_n(p)=\inf_x P_{n,p}(x)$ is continuous on $(0,1)$ (Lemma 2.1 below); the holding region is $H_n=\{p:m_n(p)\ge n\}$. The two smallest odd cases are settled here.
 
@@ -59,15 +46,15 @@ Consequently $H_n=\{p:m_n(p)\ge n\}$ is closed in $(0,1)$, so its complement (th
 >
 > *Proof.* Extend $P$ to the closed face $\overline{\Sigma_Z}=\{x\in\Delta_n:\mathrm{supp}(x)^c\supseteq Z\}$ as in Lemma 2.1 (lsc, $+\infty$ on infeasible points); $P<+\infty$ iff every denominator is strictly positive, so the admissible domain equals the union of precise-support strata $\bigcup_{Z'\supseteq Z,\,Z'\text{ ind.}}\Sigma_{Z'}$. Take a minimizing sequence $x_k\in\Sigma_Z$ with $P(x_k)\to\inf_{\Sigma_Z}P$; by compactness of $\Delta_n$, after passing to a subsequence $x_k\to x^\ast\in\overline{\Sigma_Z}$. If $\mathrm{supp}(x^\ast)^c=Z$ (the support did not shrink), then $x^\ast\in\Sigma_Z$ and, being an interior minimizer on $\Sigma_Z$, satisfies $\nabla_{\Sigma_Z}P=0$ (Euler, $\lambda=0$) — an interior KKT value. Otherwise the zero-set enlarged to an independent $Z'\supsetneq Z$, so $x^\ast\in\Sigma_{Z'}$ and $P(x^\ast)\ge\inf_{\Sigma_{Z'}}P$ (lsc). If the enlargement ever creates two cyclically adjacent zeros, take a maximal consecutive zero-block: the positive component just before it has a numerator bounded away from $0$ while its denominator (a sum involving a zero neighbour) tends to $0$, so $P\to+\infty$ — hence non-viable $Z'$ contributes $+\infty$ and never attains the infimum. Conversely, each viable child $Z'$ is approachable from $\Sigma_Z$ by lifting its new zero to $\varepsilon\downarrow0$ (independence keeps all denominators $>0$ for small $\varepsilon$), so $\inf_{\Sigma_{Z'}}P$ is indeed inherited from below. Taking the infimum over the interior local-minimum KKT values and the minimum over all viable children gives the displayed formula. $\square$
 
-This is the stratum recursion used throughout §3–§4: $\inf_{S_0}P=\min\{7,\inf_{S_1}P,\ldots\}$, etc. (Here $S_0$ denotes the *open* full-support stratum $\{x_i>0:\sum x_i=1\}$, distinct from the closed simplex $\Delta_n$; the minimizer on $\Delta_n$ is either the interior point $\mathbf1$ or lies on a viable boundary stratum, which is exactly what the lemma formalises.) Yamagami [7, §5, pp.524–527] likewise notes that interior Hessian uniqueness does not control the boundary, which must be analysed separately — the stratum recursion is that analysis.
+This is the stratum recursion used throughout §3–§4: $\inf_{S_0}P=\min\{7,\inf_{S_1}P,\ldots\}$, etc. (Here $S_0$ denotes the *open* full-support stratum $\{x_i>0:\sum x_i=1\}$, distinct from the closed simplex $\Delta_n$; the minimizer on $\Delta_n$ is either the interior point $\mathbf1$ or lies on a viable boundary stratum, which is exactly what the lemma formalises.) Yamagami [11, §5, pp.524–527] likewise notes that interior Hessian uniqueness does not control the boundary, which must be analysed separately — the stratum recursion is that analysis.
 
-**Nowosad–Yamagami theorem** (Nowosad [8], CPAM 21 (1968), Thm 1.8; Yamagami [7], Proc. AMS 118 (1993), 521–527, Thm 1, Lemma 3, Cor. 5). We state the finite-dimensional specialisation we need, in the commutative C$^\ast$-algebra $A=\mathbb C^n$ (entrywise product, state $\varphi=\sum_i$, self-adjoint part $A_s=\mathbb R^n$). For a linear $T:A\to A$ write $X_T(y)=\varphi(y^{-1}T(y))=\sum_i T(y)_i/y_i$ on $A_{++}$.
+**Nowosad–Yamagami theorem** (Nowosad [7], CPAM 21 (1968), Thm 1.8; Yamagami [11], Proc. AMS 118 (1993), 521–527, Thm 1, Lemma 3, Cor. 5). We state the finite-dimensional specialisation we need, in the commutative C$^\ast$-algebra $A=\mathbb C^n$ (entrywise product, state $\varphi=\sum_i$, self-adjoint part $A_s=\mathbb R^n$). For a linear $T:A\to A$ write $X_T(y)=\varphi(y^{-1}T(y))=\sum_i T(y)_i/y_i$ on $A_{++}$.
 
 (NY-1) *Constancy on the closed subgroup* (Yamagami Thm 1, restating Nowosad Thm 1.8). For $a\in A_{++}$, let $[a]\subset A_s^\times$ denote Yamagami's closed subgroup consisting of those self-adjoint invertibles $x$ for which both $x$ and $x^{-1}$ are norm-limits of Laurent polynomials in $a$; it contains $a$ (so it is *not* the geometric segment $\{(1{-}t)\mathbf1+ta:0\le t\le1\}$, and in general is neither compact nor contained in the positive cone). If $T$ is $\ast$-preserving ($T(x^\ast)=T(x)^\ast$) and $X_T$ has local maxima at $\mathbf1$ and at $a\in A_s\setminus\mathbb R\mathbf1$, then $X_T$ is **constant on $[a]$**. In finite dimension $a^t=\exp(t\log a)\in[a]$ for every $t\in\mathbb R$ (by polynomial interpolation on the finite spectrum of $a$); constancy gives $\tfrac{d^2}{dt^2}X_T(a^t)\big|_{t=0}=0$, so the tangent direction $\log a$ (mod the scale direction $\mathbf1$, nonzero when $a$ is non-scalar) lies in $\ker\nabla^2X_T(\mathbf1)$. Consequently, if $\ker\nabla^2X_T(\mathbf1)=\mathrm{span}\{\mathbf1\}$, no such non-scalar $a$ exists: $X_T$ has at most one isolated interior local maximum, up to the scalar ray.
 
 (NY-2) *Spectral non-degeneracy* (Yamagami Lemma 2 + Lemma 3; Cor. 5). Yamagami's Hessian formula (Lemma 2) gives, for $P=f_S$ with $S\mathbf1=\mathbf1$ ($s=1$), the Hessian on $\mathbf1^\perp$ diagonalised by the Fourier modes; the same Fourier calculation as in Cor. 5 yields the eigenvalue $\mu_k=2|\lambda_k|^2-2\operatorname{Re}\lambda_k$ (identically $2(1-\cos\theta_k)[2q\cos\theta_k+2p^2-3p+2]$, verified below), where $\lambda_k=p\omega^k+q\omega^{2k}$ ($k\ne0$). Cor. 5 itself states the **interior-disk** condition $|\lambda_k-\tfrac12|<\tfrac12$ for the $f_S$-*maximum* case ($\mu_k<0$, the negative Hessian $s(S+S^\top)-2S^\top S$ being positive semidefinite); our $P=f_S$ *minimum* case is the **symbol-dual**: $\mu_k>0$ iff $|\lambda_k-\tfrac12|>\tfrac12$ (exterior disk), equivalently $\operatorname{sign}\mu_k=\operatorname{sign}(|\lambda_k-\tfrac12|^2-\tfrac14)$ (verified in `verify_ny_spectral.py`). Thus $\mu_k>0$ for all $k\ne0$ makes $\mathbf1$ a **strict local minimum** with $\ker\nabla^2P(\mathbf1)=\mathrm{span}\{\mathbf1\}$, and by (NY-1) the **unique** interior local-minimum ray.
 
-> **Lemma 2.2 (interior uniqueness, finite-dimensional N–Y).** Let $S=pC+qC^2$ ($p,q>0$, $p+q=1$, $n$ odd) and $P(x)=\sum_{i=0}^{n-1}x_i/(Sx)_i$ on the positive cone. If $\nabla^2P(\mathbf1)\succeq0$ with $\ker\nabla^2P(\mathbf1)=\mathrm{span}\{\mathbf1\}$ (equivalently every $\mu_k>0$; for $n=5,7$ this follows uniformly in $p$ from $\Delta_n<0$, proved in §3.1 and §4.1), then $\mathbf1$ is the **unique interior local-minimum ray** of $P$ on the full-support face. The inequality $P\ge n$ on the whole face is *not* a consequence of this lemma; it requires a separate boundary analysis (Yamagami [7], §5, pp.524–527), performed here by stratum recursion (boundary inheritance) in §3.4 ($n=5$) and §4.5 ($n=7$).
+> **Lemma 2.2 (interior uniqueness, finite-dimensional N–Y).** Let $S=pC+qC^2$ ($p,q>0$, $p+q=1$, $n$ odd) and $P(x)=\sum_{i=0}^{n-1}x_i/(Sx)_i$ on the positive cone. If $\nabla^2P(\mathbf1)\succeq0$ with $\ker\nabla^2P(\mathbf1)=\mathrm{span}\{\mathbf1\}$ (equivalently every $\mu_k>0$; for $n=5,7$ this follows uniformly in $p$ from $\Delta_n<0$, proved in §3.1 and §4.1), then $\mathbf1$ is the **unique interior local-minimum ray** of $P$ on the full-support face. The inequality $P\ge n$ on the whole face is *not* a consequence of this lemma; it requires a separate boundary analysis (Yamagami [11], §5, pp.524–527), performed here by stratum recursion (boundary inheritance) in §3.4 ($n=5$) and §4.5 ($n=7$).
 
 *Proof.* (1) **$S$ is invertible.** $S$ is circulant with Fourier eigenvalues $\lambda_k=\omega^k(p+q\omega^k)$; $\lambda_k=0$ would force $\omega^k=-p/q$ of modulus $1$, hence $p=q$ and $\omega^k=-1$, impossible for odd $n$. (2) **$S\mathbf1=\mathbf1$ and $S^\top\mathbf1=\mathbf1$** (each column sums to $p+q=1$), hence $S^{-1}\mathbf1=\mathbf1$. (3) **$T=-S^{-1}$ is $\ast$-preserving, not self-adjoint.** $S$ is real, hence so is $S^{-1}$, so $T(x^\ast)=T(x)^\ast$ (complex conjugation commutes with the real matrix $T$). This is the structure N-Y requires. ($S$ itself is *not* self-adjoint — $S^\top=pC^{-1}+qC^{-2}\ne S$ for $n\ge3$ — and self-adjointness of $T$ is neither needed nor true in general; only $\ast$-preservation is.) (4) **Sign bridge.** The linear map $S:A_{++}\to S(A_{++})$ is a diffeomorphism onto its image (by (1), $S$ is invertible); $S(A_{++})$ is open in $\mathbb R^n$ and contains a neighbourhood of $S\mathbf1=\mathbf1$. Since $P(x)=\sum_i(S^{-1}y)_i/y_i=X_{S^{-1}}(y)$ and $X_{-S^{-1}}=-X_{S^{-1}}$ by linearity of $\varphi$, a local minimum of $P$ at $\mathbf1$ corresponds to a local maximum of $X_{-S^{-1}}$ at $\mathbf1$ *within $S(A_{++})$*; because $S(A_{++})$ is a neighbourhood of $\mathbf1$, this is also a local maximum in $A_{++}$, with $X_{-S^{-1}}(\mathbf1)=-n$. (We do not claim $S^{-1}$ preserves the positive cone — only the local correspondence at $\mathbf1$ is needed.) (5) **Hessian transfer (congruence).** Differentiating $X_T(y)=-P(S^{-1}y)$ twice at $y=\mathbf1$ (with $T=-S^{-1}$) gives, in the same coordinate basis, the **congruence**
 $$\nabla_y^2 X_T(\mathbf1)\;=\;-S^{-\top}\,\nabla_x^2 P(\mathbf1)\,S^{-1}.$$
@@ -184,7 +171,7 @@ F(p)={}&5764801 p^{15}-47765494 p^{14}+190003135 p^{13}-486209703 p^{12}\\
 &+1017028633 p^{7}-624621984 p^{6}+310300032 p^{5}-122238368 p^{4}\\
 &+36836352 p^{3}-7952896 p^{2}+1073408 p-65536.
 \end{aligned}$$
-**Irreducibility:** $F\bmod23\in\mathbb F_{23}[p]$ is irreducible (leading coeff $7^8\not\equiv0$), so $F$ is irreducible over $\mathbb Q$ (Gauss's lemma [9]). **Sturm:** $F$ has exactly two roots in $(0,1)$ — these are
+**Irreducibility:** $F\bmod23\in\mathbb F_{23}[p]$ is irreducible (leading coeff $7^8\not\equiv0$), so $F$ is irreducible over $\mathbb Q$ (Gauss's lemma [4]). **Sturm:** $F$ has exactly two roots in $(0,1)$ — these are
 $$a_7\approx0.21427352090984097\in(1/5,1/4),\qquad b_7\approx0.32862767791659197\in(1/4,1/3)$$
 (a third real root $\approx1.3266$ lies outside).
 
@@ -329,7 +316,7 @@ certifies the inactive KKT (Sturm: $0$ roots in $(1/5,1/3)\supset(a_7,b_7)$). $\
 
 ## 5. Computer-assisted proof and code availability
 
-The proofs are computer-assisted in the following sense. Resultant eliminations, exact rational Sturm sign-variation counts [10], positive-coefficient crossing factors, Hessian-determinant factors, and rational interval sign samples are all produced by exact symbolic computation, and every asserted identity is checked by exact polynomial division (quotient and remainder recorded, remainder zero). Inequality and root-isolation certificates use rigorous interval arithmetic with outward rounding [11]. Two independent arithmetic backends are used, both outward-directed: exact rational arithmetic (SymPy) and interval arithmetic (`mpmath.iv` and Arb via `python-flint`); the $H_C$ cover is verified by both backends independently. The $S_1$/$S_2$ crossing and determinant certificates are univariate (Sylvester determinants of size $\le 12$); the $H_C$ critical-event enumeration forms bivariate resultants, but each factor has degree $\le 3$ in the eliminated variable, so every intermediate has bounded degree and the scripts run in bounded memory.
+The proofs are computer-assisted in the following sense. Resultant eliminations, exact rational Sturm sign-variation counts [2], positive-coefficient crossing factors, Hessian-determinant factors, and rational interval sign samples are all produced by exact symbolic computation, and every asserted identity is checked by exact polynomial division (quotient and remainder recorded, remainder zero). Inequality and root-isolation certificates use rigorous interval arithmetic with outward rounding [10]. Two independent arithmetic backends are used, both outward-directed: exact rational arithmetic (SymPy) and interval arithmetic (`mpmath.iv` and Arb via `python-flint`); the $H_C$ cover is verified by both backends independently. The $S_1$/$S_2$ crossing and determinant certificates are univariate (Sylvester determinants of size $\le 12$); the $H_C$ critical-event enumeration forms bivariate resultants, but each factor has degree $\le 3$ in the eliminated variable, so every intermediate has bounded degree and the scripts run in bounded memory.
 
 The complete software environment, the $\Phi_{35}$ coefficient vector and its Sturm isolation counts, the per-file certificate script listings, the machine records (`_hc_cover.json`, `_hc_s1collar.json`, `_hc_exhaustiveness.json`, `_archival_run.txt`), and the reproducibility commands are recorded in the supplementary material (`SUPPLEMENT.md`); the authoritative script role map is in `code/README.md`, and pinned dependencies in `code/requirements_lock.txt`. The proof artifact is committed to a self-contained git repository with a SHA-256 manifest (`sha256_manifest.txt`); a Zenodo DOI will be added upon deposition and is not a proof ingredient.
 
@@ -337,24 +324,24 @@ The complete software environment, the $\Phi_{35}$ coefficient vector and its St
 
 ## References
 
-[1] V. G. Drinfel'd, *A cyclic inequality*, Math. Notes Acad. Sci. USSR **9** (1971), 68–71.
+[1] T. Ando, *A new proof of Shapiro inequality*, Math. Inequal. Appl. **16** (2013), 611–632.
 
-[2] N. M. Tuan and L. Q. Thuong, *On an extension of Shapiro's cyclic inequality*, J. Inequal. Appl. **2009**, Article ID 491576.
+[2] S. Basu, R. Pollack, and M.-F. Roy, *Algorithms in Real Algebraic Geometry*, Algorithms Comput. Math. **10**, Springer-Verlag, Berlin, 2006.
 
-[3] H. S. Shapiro, Problem 4603, Amer. Math. Monthly **61** (1954), 571.
+[3] V. G. Drinfel'd, *A cyclic inequality*, Math. Notes Acad. Sci. USSR **9** (1971), 68–71.
 
-[4] M. J. Lighthill, *An invalid inequality*, Amer. Math. Monthly **63** (1956), 191–192.
+[4] D. Dummit and R. Foote, *Abstract Algebra*, 3rd ed., John Wiley & Sons, 2004.
 
-[5] D. S. Mitrinović, J. E. Pečarić, and A. M. Fink, *Classical and New Inequalities in Analysis*, Kluwer Academic Publishers, Dordrecht, 1993.
+[5] M. J. Lighthill, *An invalid inequality*, Amer. Math. Monthly **63** (1956), 191–192.
 
-[6] T. Ando, *A new proof of Shapiro inequality*, Math. Inequal. Appl. **16** (2013), 611–632.
+[6] D. S. Mitrinović, J. E. Pečarić, and A. M. Fink, *Classical and New Inequalities in Analysis*, Kluwer Academic Publishers, Dordrecht, 1993.
 
-[7] S. Yamagami, *Cyclic inequalities*, Proc. Amer. Math. Soc. **118** (1993), 521–527.
+[7] P. Nowosad, *Isoperimetric eigenvalue problems in algebras*, Comm. Pure Appl. Math. **21** (1968), 401–465.
 
-[8] P. Nowosad, *Isoperimetric eigenvalue problems in algebras*, Comm. Pure Appl. Math. **21** (1968), 401–465.
+[8] H. S. Shapiro, Problem 4603, Amer. Math. Monthly **61** (1954), 571.
 
-[9] D. Dummit and R. Foote, *Abstract Algebra*, 3rd ed., John Wiley & Sons, 2004.
+[9] N. M. Tuan and L. Q. Thuong, *On an extension of Shapiro's cyclic inequality*, J. Inequal. Appl. **2009**, Article ID 491576.
 
-[10] S. Basu, R. Pollack, and M.-F. Roy, *Algorithms in Real Algebraic Geometry*, Algorithms Comput. Math. **10**, Springer-Verlag, Berlin, 2006.
+[10] W. Tucker, *Validated Numerics: A Short Introduction to Rigorous Computations*, Princeton University Press, Princeton, 2011.
 
-[11] W. Tucker, *Validated Numerics: A Short Introduction to Rigorous Computations*, Princeton University Press, Princeton, 2011.
+[11] S. Yamagami, *Cyclic inequalities*, Proc. Amer. Math. Soc. **118** (1993), 521–527.

@@ -239,6 +239,13 @@ preamble = r"""\documentclass[11pt,a4paper]{article}
 \usepackage{xcolor}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small W. Xue}
+\fancyhead[R]{\small \nouppercase{Tuan--Thuong weighted Shapiro inequality ($n=5{,}7$)}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}{Lemma}
@@ -252,6 +259,7 @@ preamble = r"""\documentclass[11pt,a4paper]{article}
 \date{\today}
 \begin{document}
 \maketitle
+\thispagestyle{plain}
 \sloppy
 \emergencystretch=4em
 """

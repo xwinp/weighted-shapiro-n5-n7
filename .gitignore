@@ -72,6 +72,10 @@ Thumbs.db
 
 # --- regenerable distribution archive (built from the tracked sources) ---
 /proof_artifact.zip
+# --- submission build artifacts (regenerable from the v1.0-submission tag) ---
+/proof_artifact_rev13.zip
+/supplementary_code.zip
+/COMMIT.txt
 
 # --- repo-root browser-act / orchestrator scratch (not part of the proof) ---
 /orchestrator/

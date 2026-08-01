@@ -1,20 +1,29 @@
-### Archival run - 8 Tier-1 load-bearing + 14 Tier-2 formal certificates (rev 12)
-### rev 12: NO theorem statement / numerical-invariant change. All invariants
-###        identical to rev 4-11 (collar gmin=7.344054>L_C, exhaustiveness
+### Archival run - 8 Tier-1 load-bearing + 14 Tier-2 formal certificates (rev 13)
+### rev 13: minimal factor fix to the H_C containment identity (GPT round-18 NO-GO on
+###        rev 12).  NO theorem statement / numerical-invariant change. All invariants
+###        identical to rev 4-12 (collar gmin=7.344054>L_C, exhaustiveness
 ###        components=2/cells=6/fibers=5/edges=2823, Arb 2604/2604, min 7.050005>141/20).
-###        Closes GPT's 3 pre-submission must-fix proof gaps (rigorizing existing claims):
-###  (1) Lemma 2.3 boundary inheritance: bidirectional inf (lsc upper + definition lower
-###      + approximation converse -> equality), replacing the one-sided lsc attribution.
-###  (2) S3 positive KKT point uniqueness: sequential linear-fractional elimination ->
-###      -(b-r^2)(r+1)(quartic)(r^4-r^3+r^2-r+1)=0, all factors positive for b,r>0 except
-###      b-r^2.  Added as verify_s3_closed.py section 5 (exact zero-polynomial checks).
-###  (3) H_C containment (load-bearing): replaces the FALSE "F1 is E2_red up to a
-###      prefactor" claim with an exact subresultant identity
-###      sigma1^3 * E2^u(r) = z(w-1)^2(z-1)^2 B A H_C (rem 0), sigma1=w*g,
-###      Res_w(g,H_C)=-z^11(z-1)^6 (vanishes only at inadmissible z=0,1) -> sigma1!=0
-###      -> E2^u(r)=0 -> E2_red=0.  New Tier-1 verifier verify_s1_hc_superset.py.
-###      Also: HB endpoint limits (rho->0 @z->0+, ->+inf @z->1-); "state"->"positive
-###      linear functional"; "moving into full cone"->"one-sided KKT stability".
+### The fix (load-bearing, must-fix):
+###  (3') The rev-12 identity  sigma1^3 * E2^u(r) = z(w-1)^2(z-1)^2 B A H_C  was FALSE
+###      by the factor w^3 z^3 (sigma1=w*z*h, so sigma1^3 = w^3 z^3 h^3).  The rev-12
+###      verifier checked only the NUMERATOR of E2^u(r) after clearing h^3 (== target)
+###      but PRINTED it as sigma1^3 * E2^u(r) = target.  CORRECTED to the TRUE identity
+###          g(w,z)^3 * E2^u_num(r) = z^4 (w-1)^2 (z-1)^2 B A H_C,   sigma1 = w*g,
+###      verified as the WHOLE rational identity  together(g^3*E2^u_num(r) - RHS)==0
+###      (defensive: den(E2^u_num(r)) == h^3, h=g/z).  Res_w(g,H_C)=-z^11(z-1)^6
+###      => g!=0 on the admissible H_C branch => H_C=0 => E2^u_num(r)=0 => E2_red=0.
+###      Conclusion (containment) UNCHANGED; only the clearing-denominator factor was
+###      wrong.  Paper §4.3 identity + prose rewritten to the g^3 version (g!=0, not
+###      sigma1!=0).  Stale sigma1^3 comments in verify_s1_elimination.py and
+###      verify_s1_elim_step3.py corrected.
+### Non-blocking polish (GPT round-18 suggestions, adopted):
+###  (2') S3 (e,d) elimination made EXPLICIT: gc,gd factor as
+###      -e(r+1)(cyclot)(d r^5+e r^10-b^3) and b(r+1)(cyclot)(r^5(d+e r^5)^2-b^2 e),
+###      reducing to eq1: d r^5+e r^10=b^3, eq2: r^5(d+e r^5)^2=b^2 e (linear in d, e),
+###      unique (e,d)=(b^4/r^5, b^3(1-b r^5)/r^5).  Paper §4.1 prose updated; no sp.solve
+###      on the gradient system.
+###  (1') Lemma 2.3: added normalization note (degree-zero homogeneity of P leaves the
+###      cone KKT values as the exact stratum candidates).
 ### Generators read-only by default; committed JSONs canonical LF.
 ### host: Windows-11-10.0.26200-SP0  python: Python 3.13.9  (python-flint==0.9.0 for Arb)
 ### date: 2026-08-01
@@ -74,14 +83,16 @@ DONE-ELIMINATION
 ================================================================
 (H_C) Res_v(F1,F2) = w^2 z^2 (w-1)^2 H_B H_C           [OK]
 (E2)  E2u_num = (v-1) * E2_red                           [OK]
-(KEY) sigma1^3 * E2u_num(r) = z (w-1)^2 (z-1)^2 B A H_C    [OK]
+(KEY) g^3 * E2u_num(r) = z^4 (w-1)^2 (z-1)^2 B A H_C        [OK]
+      (denominator of E2u_num(r) is h^3 = g^3/z^3; cleared by g^3)
       r = -sigma0/sigma1  (linear subresultant root; KKT v on H_C=0)
 (sig1) sigma1 = w*g; Res_w(g,H_C) factored: -z**11*(z - 1)**6
        only real zeros in [0,1] are z=0, z=1 (inadmissible endpoints)
-       => sigma1 != 0 on admissible H_C branch (z in (0,1), w in (0,1))  [OK]
+       => g != 0 on admissible H_C branch (z in (0,1))
+       => on H_C=0: (*) gives E2u_num(r) = 0  [OK]
 
-CONTAINMENT (EXACT): on the admissible H_C branch, the KKT v-root r
-  satisfies  sigma1^3 * E2u_num(r) = ... * H_C = 0  =>  E2u_num(r) = 0;
+CONTAINMENT (EXACT): on the admissible H_C branch, g != 0, so the identity
+  g^3 * E2u_num(r) = z^4 (w-1)^2 (z-1)^2 B A H_C = 0  =>  E2u_num(r) = 0;
   admissibility (v != 1) => E2_red = 0.  Hence
   V_KKT^adm  cap  V(H_C)  subset  V(H_C, E2_red, E3, K, g1).
 DONE-HC-SUPERSET
@@ -124,7 +135,7 @@ seam: s_lo[0]==s_max (True) and s_hi[-1]==1 (True) : True
 === summary ===
 collar pieces: 60 ; sweep P_lo min=7.344054 ; re-verify P_lo min=7.344054 > L_C=7.05000
 failures(sweep): 0 ; re-verify ok: True
-elapsed 2.6s
+elapsed 2.4s
 Read-only: code/_hc_s1collar.json not rewritten (pass --write-record to update)
 DONE-S1COLLAR n=60 gmin=7.344054 gmin_re=7.344054 >L_C=True revify=True seam=True abut=True
 [exit 0]
@@ -407,7 +418,9 @@ EXACT chain holds => H(r)>0 => P_S3^stat - 8 = (1-r)H(r)/r^2 > 0 : True
 -- UNIQUENESS of the positive S3 KKT point --
   gb = 1/(qc)-1/(pb^2), strictly decreasing in c (unique c) : True
   gb=0 -> c=b^2/r^5                                          : True
-  gc=0 & gd=0 -> UNIQUE (e,d)=(b^4/r^5, b^3(1-br^5)/r^5)    : True
+  gc factors: gc = -e(r+1)(cyclot)*(d r^5+e r^10-b^3)       : True
+  gd factors: gd =  b(r+1)(cyclot)*(r^5(d+e r^5)^2-b^2 e)   : True
+  eq1,eq2 -> UNIQUE (e,d)=(b^4/r^5, b^3(1-br^5)/r^5)        : True
   ge=0 -> -(b-r^2)(r+1)(quartic)(r^4-r^3+r^2-r+1) [exact]   : True
   b^5-r^10 = (b-r^2)*quartic                                 : True
   quartic coeffs all positive (=> >0 for b,r>0)             : True
@@ -648,4 +661,5 @@ CERTIFICATE: every REAL H_C-lift stationary point has P>7=True AND every spuriou
 DONE-KKT
 [exit 0]
 
-### end of rev-12 archival run (22/22 [exit 0])
+================================================================
+SUMMARY: 22/22 certificate scripts exit 0.

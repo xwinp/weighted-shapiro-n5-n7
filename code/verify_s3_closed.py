@@ -127,16 +127,25 @@ c_expr = b**2 / r**5
 e_expr = b**4 / r**5
 d_expr = b**3 * (1 - b * r**5) / r**5
 gb_zero = num_of(g_t[b].subs(c, c_expr)) == 0
-# with c = b^2/r^5, the system gc=0 & gd=0 has a UNIQUE solution (e,d) = (e_expr, d_expr)
+# with c = b^2/r^5, the gradients gc, gd factor EXPLICITLY (no sp.solve on the system):
+#   gc_ce = -e (r+1) (cyclot) (d r^5 + e r^10 - b^3)        -> eq1: d r^5 + e r^10 = b^3
+#   gd_ce =  b (r+1) (cyclot) (r^5 (d + e r^5)^2 - b^2 e)   -> eq2: r^5 (d + e r^5)^2 = b^2 e
+# (prefactors e, b, r+1, cyclot=(r^5+1)/(r+1) are all > 0 on the positive domain), so the KKT
+# conditions gc=0 & gd=0 are EQUIVALENT to {eq1=0, eq2=0}.  eq1 is linear in d and eq2 linear in
+# e (given d), so the two pin (e,d) UNIQUELY.
 gc_ce = num_of(g_t[c].subs(c, c_expr)); gd_ce = num_of(g_t[d].subs(c, c_expr))
-ed_sol = sp.solve([gc_ce, gd_ce], [e, d], dict=True)
+cyclot = r**4 - r**3 + r**2 - r + 1          # = (r^5+1)/(r+1) > 0 for r>0
+eq1 = sp.expand(d*r**5 + e*r**10 - b**3)
+eq2 = sp.expand(r**5*(d + e*r**5)**2 - b**2*e)
+gc_factor = sp.expand(gc_ce - (-e*(r + 1)*cyclot*eq1)) == 0
+gd_factor = sp.expand(gd_ce - ( b*(r + 1)*cyclot*eq2)) == 0
+ed_sol = sp.solve([eq1, eq2], [e, d], dict=True)
 ed_unique = (len(ed_sol) == 1 and sp.simplify(ed_sol[0][e] - e_expr) == 0
              and sp.simplify(ed_sol[0][d] - d_expr) == 0)
 gc_zero = num_of(g_t[c].subs([(c, c_expr), (e, e_expr), (d, d_expr)])) == 0
 gd_zero = num_of(g_t[d].subs([(c, c_expr), (e, e_expr), (d, d_expr)])) == 0
 ge_num = num_of(g_t[e].subs([(c, c_expr), (e, e_expr), (d, d_expr)]))
 quartic = b**4 + b**3 * r**2 + b**2 * r**4 + b * r**6 + r**8
-cyclot = r**4 - r**3 + r**2 - r + 1          # = (r^5+1)/(r+1) > 0 for r>0
 target = sp.expand(-(-b + r**2) * (r + 1) * quartic * cyclot)
 uniq_factor = sp.expand(ge_num - target) == 0
 quartic_pos = all(co > 0 for co in sp.Poly(quartic, b, r).coeffs())
@@ -146,15 +155,17 @@ b5_factor = sp.expand((b - r**2) * quartic - (b**5 - r**10)) == 0
 print("\n-- UNIQUENESS of the positive S3 KKT point --")
 print(f"  gb = 1/(qc)-1/(pb^2), strictly decreasing in c (unique c) : {gb_form and gb_decr}")
 print(f"  gb=0 -> c=b^2/r^5                                          : {gb_zero}")
-print(f"  gc=0 & gd=0 -> UNIQUE (e,d)=(b^4/r^5, b^3(1-br^5)/r^5)    : {ed_unique}")
+print(f"  gc factors: gc = -e(r+1)(cyclot)*(d r^5+e r^10-b^3)       : {gc_factor}")
+print(f"  gd factors: gd =  b(r+1)(cyclot)*(r^5(d+e r^5)^2-b^2 e)   : {gd_factor}")
+print(f"  eq1,eq2 -> UNIQUE (e,d)=(b^4/r^5, b^3(1-br^5)/r^5)        : {ed_unique}")
 print(f"  ge=0 -> -(b-r^2)(r+1)(quartic)(r^4-r^3+r^2-r+1) [exact]   : {uniq_factor}")
 print(f"  b^5-r^10 = (b-r^2)*quartic                                 : {b5_factor}")
 print(f"  quartic coeffs all positive (=> >0 for b,r>0)             : {quartic_pos}")
 print(f"  (r+1)(r^4-r^3+r^2-r+1) = r^5+1 > 0                        : {cyclot_pos}")
 print("  => b=r^2 is the UNIQUE positive root; c=r^-1, e=r^3, d=r(1-r^7) unique.")
 
-uniq_ok = (gb_form and gb_decr and gb_zero and ed_unique and gc_zero and gd_zero
-           and uniq_factor
+uniq_ok = (gb_form and gb_decr and gb_zero and gc_factor and gd_factor and ed_unique
+           and gc_zero and gd_zero and uniq_factor
            and quartic_pos and cyclot_pos and b5_factor)
 
 ok = kkt_ok and form_ok and chain_ok and band_below_half and uniq_ok

@@ -7,7 +7,9 @@ v,w,z,rho = sp.symbols('v w z rho', positive=True)
 # DIAGNOSTIC: F1 is NOT a scalar multiple of E2u_num/E2_red (the print below is False).
 # The correct F1 <-> E2_red relation on H_C=0 is certified EXACTLY in
 # verify_s1_hc_superset.py via the linear subresultant identity
-#   sigma1^3 * E2u_num(r) = z (w-1)^2 (z-1)^2 B A H_C,   r = -sigma0/sigma1,
+#   g(w,z)^3 * E2u_num(r) = z^4 (w-1)^2 (z-1)^2 B A H_C,   r = -sigma0/sigma1, sigma1=w*g,
+# (verified as the whole rational identity; the rev-12 draft's sigma1^3 version was wrong by
+#  the factor w^3 z^3), with Res_w(g,H_C)=-z^11(z-1)^6 => g!=0 on the admissible H_C branch,
 # which proves the KKT v-root satisfies E2_red = 0 on the H_C branch.
 F1 = v**2*w + v*w**3 - v*w**2 + v*w*z - v*w - v*z + v - w**3 + 2*w**2 - w
 F2 = v**2*w*z + v*w*z**3 - v*w*z**2 - v*w*z + v*w - v*z**3 + v*z**2 + w**2*z - w*z

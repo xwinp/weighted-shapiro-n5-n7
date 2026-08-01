@@ -21,8 +21,12 @@ Elimination chain (all exact, resultants / linear elimination):
       F1, F2, F3 (all p-free, i.e. rho-free).  NOTE: F1 is NOT a scalar multiple of E2_red
       (F1 == E2u_num is False; see verify_s1_elim_step3.py).  The correct relation is certified
       in verify_s1_hc_superset.py: on H_C=0 the KKT v-root (common root of F1,F2, given by their
-      linear subresultant) satisfies the EXACT identity sigma1^3 * E2u_num(r) = z(w-1)^2(z-1)^2 B A H_C,
-      hence E2_red=0.  This replaces the earlier incorrect "up to a prefactor" claim.
+      linear subresultant S_1=sigma1*v+sigma0, r=-sigma0/sigma1, sigma1=w*g) satisfies the EXACT
+      polynomial identity g(w,z)^3 * E2u_num(r) = z^4 (w-1)^2 (z-1)^2 B A H_C (verified as the
+      whole rational identity; the denominator of E2u_num(r) alone is h^3 with h=g/z), and
+      Res_w(g,H_C)=-z^11(z-1)^6 => g!=0 on the admissible H_C branch, hence E2_red=0.
+      This replaces the earlier incorrect "up to a prefactor" claim (and the rev-12 draft's
+      sigma1^3 version, which was wrong by the factor w^3 z^3).
   (3) eliminate rho_1 from g_1 with u substituted -> the closure  (rho^7 = K(u,v,w,z)).
   (4) eliminate v:  Res_v(F1, F2) = w^2 (w-1)^2 * H_B * H_C   (EXACT identity).
       => on the admissible set (w in (0,1)) every S1 KKT solution has H_B H_C = 0,
